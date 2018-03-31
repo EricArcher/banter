@@ -1,0 +1,52 @@
+---
+title: "BANTER Notes"
+output:
+  html_notebook: default
+---
+
+### S4 classes for BANTER
+
+#### detector
+Contains information from a detector for a given call type (e.g., clicks). Slots:
+
+* `info`: list of information about the detector. must have unique `name`, but also can include username, date/time run, detector settings, etc.
+* `data`: data.frame with one row per call. columns are:
+    + `event.id`
+    + `call.id`: must be unique for detector.
+    + every column after is a measurement of call `call.id` from the detector.  
+* `model`: randomForest or rfPermute model object.
+
+#### events
+Contains information about all events. Slots:
+
+* `data`: data.frame of data used to train the model with one row per event. Columns are:
+
+    + `event.id`
+    + `species`
+    + every column after is event-specific data to be used in event-level classifier.
+* `detectors`: named list of `detector` objects
+* `is.training`: logical - are these events for training the model? must be set when object is made and cannot be changed.
+    + `TRUE`: any rows with `NA` in the `species` column of `@data` are deleted.
+    + `FALSE`: the `model` slot here and in each element in `@detectors` must be `NULL` and the `species` column in `@data` must have all `NAs`.
+* `model`: randomForest or rfPermute model object.
+
+#### prediction
+Contains species predictions for events where `@is.training` is `FALSE`. Slots:
+
+* `preds`: data.frame with the following columns:  
+    + `event.id`: in same order as in `events@test`.
+    + `species`: predicted species
+    + `prob.spp`: one column with the assignment probability for each species "spp"
+
+### Functions
+
+* `loadDetectorInfo(events, detector, info)`: load metadata information for detector.
+* `loadDetectorData(events, detector, data)`: load data from detector for each call.
+* `loadEventData(events)`: load data for events.
+* `createClassifier(events)`: master runner for running both detector and event classification models.
+* `detectorProportion(events)`: loads events with total proportion of calls for each detector in an event.  
+* `assignmentMeans`: loads events with matrix of assignment probability means from each detector classifier for each event.
+* `predict(object, test.events, ...)`: S3 method for `events` object. `test.events` is an `events` object where `@is.training` is `FALSE`.
+* `summary`: S3 methods for detectors, events, and predictions. 
+* `plot`: S3 methods of summary plots for detector and event classifiers, and predictions.
+
