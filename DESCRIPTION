@@ -1,0 +1,13 @@
+Package: banter
+Type: Package
+Title: BANTER - BioAcoustic EveNT ClassifiER
+Description: Create classifier for acoustic events.
+Version: 0.0.1
+Authors@R: c(
+  EA = person("Eric", "Archer", email = "eric.archer@noaa.gov", role = c("aut", "cre")),
+  TS = person("Taiki", "Sakai", email = "taiki.sakai@noaa.gov", role = c("aut")))
+Imports:
+  tidyverse,
+  rfPermute
+License: GNU General Public License
+RoxygenNote: 6.0.1
