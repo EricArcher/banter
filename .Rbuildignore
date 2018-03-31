@@ -11,3 +11,4 @@ tar.gz$
 ^appveyor\.yml$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+.DS_Store
