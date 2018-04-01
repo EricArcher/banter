@@ -12,6 +12,22 @@ knitr::opts_chunk$set(
 )
 ```
 
+### Problems
+
+#### Memory for detector classifiers and distillation
+We had memory issues running the detector randomForest models, so we "distilled" each detector down to a manageable number. This involved doing some clustering and finding representative calls for each cluster. In order to do the clustering we had to create a distance matrix and in order to do that, we had to know which measures should be log-transformed so the Euclidean distances made sense.  
+How do we do know this ahead of time, and without requiring the users to enter it for every measure (they might get it wrong)? Howabout a simple goodness-of-fit comparison for each measure imported?
+
+#### Keeping data with classifiers
+Do we need to keep the data with the classification models? Can come in handy later for summaries, but takes up memory that we may need for classification models.
+
+#### Keeping detector metadata
+Do we need to retain detector metadata (settings, datetime run, user, etc.)? 
+
+#### How generic should the algorithm be?
+Should we closely tie this to PAMr data.types, such that we don't retain original data and use the same names/naming schemes? Do we assume BANTER will always be used with acoustic data? Always data from PAMGUARD? Could it be any set of hierachical predictors? Always classifying to species?
+
+
 ### S4 classes for BANTER
 
 #### detector
