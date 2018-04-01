@@ -3,29 +3,82 @@ title: "BANTER Notes"
 output:
   html_notebook: default
 ---
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  comment = "", 
+  echo = TRUE,
+  fig.align = "left",
+  error = TRUE
+)
+```
 
 ### S4 classes for BANTER
 
 #### detector
 Contains information from a detector for a given call type (e.g., clicks). Slots:
 
-* `info`: list of information about the detector. must have unique `name`, but also can include username, date/time run, detector settings, etc.
-* `data`: data.frame with one row per call. columns are:
+* `info`: list of information about the detector. must have unique `name`, but also can include username, date/time run, detector settings, etc. May change to just a slot for 'name' if retaining extra metadata isn't necessary.
+* `data`: data.frame with one row per call. May optionally be a filename if full data is too big to stay in memory with everything else. Columns are:
     + `event.id`
     + `call.id`: must be unique for detector.
     + every column after is a measurement of call `call.id` from the detector.  
 * `model`: randomForest or rfPermute model object.
 
+```{r}
+setClassUnion("classifier", c("randomForest", "rfPermute", "ranger", "NULL"))
+
+setClass(
+  "banter_detector",
+  slots = c(
+    info = "list",
+    data = "data.frame",
+    model = "classifier"
+  )
+)
+
+setValidity(
+  "banter_detector",
+  method = function(object) {
+    valid <- NULL
+    
+    # Check @info -----------------------
+    if(!"name" %in% names(object@info)) {
+      valid <- c(valid, "'info' must contain an element called 'name'")
+    }
+    
+    # Check @data -----------------------
+    has.event.id <- "event.id" %in% colnames(object@data)
+    has.call.id <- "call.id" %in% colnames(object@data)
+    if(!has.event.id) {
+      valid <- c(valid, "'data' must contain a column called 'event.id'")
+    }
+    if(!has.call.id) {
+      valid <- c(valid, "'data' must contain a column called 'call.id'")
+    }
+    if(has.event.id & has.call.id & ncol(object@data) == 2) {
+      valid <- c(valid, "'data' must have predictor columns")
+    }
+      
+    # Check @model ----------------------
+    if(!is.null(model)) {
+      # check that model is compatabile with data
+    }
+    
+    if(is.null(valid)) TRUE else valid
+  }
+)
+```
+
 #### events
 Contains information about all events. Slots:
 
-* `data`: data.frame of data used to train the model with one row per event. Columns are:
+* `data`: data.frame of data used to train the model with one row per event. Should be able to keep this data.frame in memory, but can store filename if too big. Columns are:
 
     + `event.id`
     + `species`
     + every column after is event-specific data to be used in event-level classifier.
 * `detectors`: named list of `detector` objects
-* `is.training`: logical - are these events for training the model? must be set when object is made and cannot be changed.
+* `is.training`: logical - are these events for training the model? Must be set when object is made and cannot be changed.
     + `TRUE`: any rows with `NA` in the `species` column of `@data` are deleted.
     + `FALSE`: the `model` slot here and in each element in `@detectors` must be `NULL` and the `species` column in `@data` must have all `NAs`.
 * `model`: randomForest or rfPermute model object.
@@ -38,15 +91,19 @@ Contains species predictions for events where `@is.training` is `FALSE`. Slots:
     + `species`: predicted species
     + `prob.spp`: one column with the assignment probability for each species "spp"
 
-### Functions
+### Accessor functions
 
-* `loadDetectorInfo(events, detector, info)`: load metadata information for detector.
-* `loadDetectorData(events, detector, data)`: load data from detector for each call.
-* `loadEventData(events)`: load data for events.
+* `detectorInfo(events, detector, info)`: load metadata information for detector.
+* `detectorData(events, detector, data)`: load data from detector for each call.
+* `eventData(events)`: load data for events.
+
+### Classification functions
 * `createClassifier(events)`: master runner for running both detector and event classification models.
 * `detectorProportion(events)`: loads events with total proportion of calls for each detector in an event.  
 * `assignmentMeans`: loads events with matrix of assignment probability means from each detector classifier for each event.
 * `predict(object, test.events, ...)`: S3 method for `events` object. `test.events` is an `events` object where `@is.training` is `FALSE`.
+
+### Summary functions
 * `summary`: S3 methods for detectors, events, and predictions. 
 * `plot`: S3 methods of summary plots for detector and event classifiers, and predictions.
 

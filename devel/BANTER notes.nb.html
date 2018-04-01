@@ -173,14 +173,16 @@ $(document).ready(function () {
 
 
 <!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-text-begin -->
 <div id="s4-classes-for-banter" class="section level3">
 <h3>S4 classes for BANTER</h3>
 <div id="detector" class="section level4">
 <h4>detector</h4>
 <p>Contains information from a detector for a given call type (e.g., clicks). Slots:</p>
 <ul>
-<li><code>info</code>: list of information about the detector. must have unique <code>name</code>, but also can include username, date/time run, detector settings, etc.</li>
-<li><code>data</code>: data.frame with one row per call. columns are:
+<li><code>info</code>: list of information about the detector. must have unique <code>name</code>, but also can include username, date/time run, detector settings, etc. May change to just a slot for ‘name’ if retaining extra metadata isn’t necessary.</li>
+<li><code>data</code>: data.frame with one row per call. May optionally be a filename if full data is too big to stay in memory with everything else. Columns are:
 <ul>
 <li><code>event.id</code></li>
 <li><code>call.id</code>: must be unique for detector.</li>
@@ -189,19 +191,67 @@ $(document).ready(function () {
 </ul></li>
 <li><code>model</code>: randomForest or rfPermute model object.</li>
 </ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2V0Q2xhc3NVbmlvbihcImNsYXNzaWZpZXJcIiwgYyhcInJhbmRvbUZvcmVzdFwiLCBcInJmUGVybXV0ZVwiLCBcInJhbmdlclwiLCBcIk5VTExcIikpXG5cbnNldENsYXNzKFxuICBcImJhbnRlcl9kZXRlY3RvclwiLFxuICBzbG90cyA9IGMoXG4gICAgaW5mbyA9IFwibGlzdFwiLFxuICAgIGRhdGEgPSBcImRhdGEuZnJhbWVcIixcbiAgICBtb2RlbCA9IFwiY2xhc3NpZmllclwiXG4gIClcbilcblxuc2V0VmFsaWRpdHkoXG4gIFwiYmFudGVyX2RldGVjdG9yXCIsXG4gIG1ldGhvZCA9IGZ1bmN0aW9uKG9iamVjdCkge1xuICAgIHZhbGlkIDwtIE5VTExcbiAgICBcbiAgICAjIENoZWNrIEBpbmZvIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tXG4gICAgaWYoIVwibmFtZVwiICVpbiUgbmFtZXMob2JqZWN0QGluZm8pKSB7XG4gICAgICB2YWxpZCA8LSBjKHZhbGlkLCBcIidpbmZvJyBtdXN0IGNvbnRhaW4gYW4gZWxlbWVudCBjYWxsZWQgJ25hbWUnXCIpXG4gICAgfVxuICAgIFxuICAgICMgQ2hlY2sgQGRhdGEgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS1cbiAgICBoYXMuZXZlbnQuaWQgPC0gXCJldmVudC5pZFwiICVpbiUgY29sbmFtZXMob2JqZWN0QGRhdGEpXG4gICAgaGFzLmNhbGwuaWQgPC0gXCJjYWxsLmlkXCIgJWluJSBjb2xuYW1lcyhvYmplY3RAZGF0YSlcbiAgICBpZighaGFzLmV2ZW50LmlkKSB7XG4gICAgICB2YWxpZCA8LSBjKHZhbGlkLCBcIidkYXRhJyBtdXN0IGNvbnRhaW4gYSBjb2x1bW4gY2FsbGVkICdldmVudC5pZCdcIilcbiAgICB9XG4gICAgaWYoIWhhcy5jYWxsLmlkKSB7XG4gICAgICB2YWxpZCA8LSBjKHZhbGlkLCBcIidkYXRhJyBtdXN0IGNvbnRhaW4gYSBjb2x1bW4gY2FsbGVkICdjYWxsLmlkJ1wiKVxuICAgIH1cbiAgICBpZihoYXMuZXZlbnQuaWQgJiBoYXMuY2FsbC5pZCAmIG5jb2wob2JqZWN0QGRhdGEpID09IDIpIHtcbiAgICAgIHZhbGlkIDwtIGModmFsaWQsIFwiJ2RhdGEnIG11c3QgaGF2ZSBwcmVkaWN0b3IgY29sdW1uc1wiKVxuICAgIH1cbiAgICAgIFxuICAgICMgQ2hlY2sgQG1vZGVsIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS1cbiAgICBpZighaXMubnVsbChtb2RlbCkpIHtcbiAgICAgICMgY2hlY2sgdGhhdCBtb2RlbCBpcyBjb21wYXRhYmlsZSB3aXRoIGRhdGFcbiAgICB9XG4gICAgXG4gICAgaWYoaXMubnVsbCh2YWxpZCkpIFRSVUUgZWxzZSB2YWxpZFxuICB9XG4pXG5gYGAifQ== -->
+<pre class="r"><code>setClassUnion(&quot;classifier&quot;, c(&quot;randomForest&quot;, &quot;rfPermute&quot;, &quot;ranger&quot;, &quot;NULL&quot;))
+
+setClass(
+  &quot;banter_detector&quot;,
+  slots = c(
+    info = &quot;list&quot;,
+    data = &quot;data.frame&quot;,
+    model = &quot;classifier&quot;
+  )
+)
+
+setValidity(
+  &quot;banter_detector&quot;,
+  method = function(object) {
+    valid &lt;- NULL
+    
+    # Check @info -----------------------
+    if(!&quot;name&quot; %in% names(object@info)) {
+      valid &lt;- c(valid, &quot;'info' must contain an element called 'name'&quot;)
+    }
+    
+    # Check @data -----------------------
+    has.event.id &lt;- &quot;event.id&quot; %in% colnames(object@data)
+    has.call.id &lt;- &quot;call.id&quot; %in% colnames(object@data)
+    if(!has.event.id) {
+      valid &lt;- c(valid, &quot;'data' must contain a column called 'event.id'&quot;)
+    }
+    if(!has.call.id) {
+      valid &lt;- c(valid, &quot;'data' must contain a column called 'call.id'&quot;)
+    }
+    if(has.event.id &amp; has.call.id &amp; ncol(object@data) == 2) {
+      valid &lt;- c(valid, &quot;'data' must have predictor columns&quot;)
+    }
+      
+    # Check @model ----------------------
+    if(!is.null(model)) {
+      # check that model is compatabile with data
+    }
+    
+    if(is.null(valid)) TRUE else valid
+  }
+)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
 </div>
 <div id="events" class="section level4">
 <h4>events</h4>
 <p>Contains information about all events. Slots:</p>
 <ul>
-<li><p><code>data</code>: data.frame of data used to train the model with one row per event. Columns are:</p>
+<li><p><code>data</code>: data.frame of data used to train the model with one row per event. Should be able to keep this data.frame in memory, but can store filename if too big. Columns are:</p>
 <ul>
 <li><code>event.id</code></li>
 <li><code>species</code></li>
 <li>every column after is event-specific data to be used in event-level classifier.</li>
 </ul></li>
 <li><code>detectors</code>: named list of <code>detector</code> objects</li>
-<li><code>is.training</code>: logical - are these events for training the model? must be set when object is made and cannot be changed.
+<li><code>is.training</code>: logical - are these events for training the model? Must be set when object is made and cannot be changed.
 <ul>
 <li><code>TRUE</code>: any rows with <code>NA</code> in the <code>species</code> column of <code>@data</code> are deleted.</li>
 <li><code>FALSE</code>: the <code>model</code> slot here and in each element in <code>@detectors</code> must be <code>NULL</code> and the <code>species</code> column in <code>@data</code> must have all <code>NAs</code>.</li>
@@ -222,24 +272,34 @@ $(document).ready(function () {
 </ul>
 </div>
 </div>
-<div id="functions" class="section level3">
-<h3>Functions</h3>
+<div id="accessor-functions" class="section level3">
+<h3>Accessor functions</h3>
 <ul>
-<li><code>loadDetectorInfo(events, detector, info)</code>: load metadata information for detector.</li>
-<li><code>loadDetectorData(events, detector, data)</code>: load data from detector for each call.</li>
-<li><code>loadEventData(events)</code>: load data for events.</li>
+<li><code>detectorInfo(events, detector, info)</code>: load metadata information for detector.</li>
+<li><code>detectorData(events, detector, data)</code>: load data from detector for each call.</li>
+<li><code>eventData(events)</code>: load data for events.</li>
+</ul>
+</div>
+<div id="classification-functions" class="section level3">
+<h3>Classification functions</h3>
+<ul>
 <li><code>createClassifier(events)</code>: master runner for running both detector and event classification models.</li>
 <li><code>detectorProportion(events)</code>: loads events with total proportion of calls for each detector in an event.<br />
 </li>
 <li><code>assignmentMeans</code>: loads events with matrix of assignment probability means from each detector classifier for each event.</li>
 <li><code>predict(object, test.events, ...)</code>: S3 method for <code>events</code> object. <code>test.events</code> is an <code>events</code> object where <code>@is.training</code> is <code>FALSE</code>.</li>
+</ul>
+</div>
+<div id="summary-functions" class="section level3">
+<h3>Summary functions</h3>
+<ul>
 <li><code>summary</code>: S3 methods for detectors, events, and predictions.</li>
 <li><code>plot</code>: S3 methods of summary plots for detector and event classifiers, and predictions.</li>
 </ul>
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiQkFOVEVSIE5vdGVzIgpvdXRwdXQ6CiAgaHRtbF9ub3RlYm9vazogZGVmYXVsdAotLS0KCiMjIyBTNCBjbGFzc2VzIGZvciBCQU5URVIKCiMjIyMgZGV0ZWN0b3IKQ29udGFpbnMgaW5mb3JtYXRpb24gZnJvbSBhIGRldGVjdG9yIGZvciBhIGdpdmVuIGNhbGwgdHlwZSAoZS5nLiwgY2xpY2tzKS4gU2xvdHM6CgoqIGBpbmZvYDogbGlzdCBvZiBpbmZvcm1hdGlvbiBhYm91dCB0aGUgZGV0ZWN0b3IuIG11c3QgaGF2ZSB1bmlxdWUgYG5hbWVgLCBidXQgYWxzbyBjYW4gaW5jbHVkZSB1c2VybmFtZSwgZGF0ZS90aW1lIHJ1biwgZGV0ZWN0b3Igc2V0dGluZ3MsIGV0Yy4KKiBgZGF0YWA6IGRhdGEuZnJhbWUgd2l0aCBvbmUgcm93IHBlciBjYWxsLiBjb2x1bW5zIGFyZToKICAgICsgYGV2ZW50LmlkYAogICAgKyBgY2FsbC5pZGA6IG11c3QgYmUgdW5pcXVlIGZvciBkZXRlY3Rvci4KICAgICsgZXZlcnkgY29sdW1uIGFmdGVyIGlzIGEgbWVhc3VyZW1lbnQgb2YgY2FsbCBgY2FsbC5pZGAgZnJvbSB0aGUgZGV0ZWN0b3IuICAKKiBgbW9kZWxgOiByYW5kb21Gb3Jlc3Qgb3IgcmZQZXJtdXRlIG1vZGVsIG9iamVjdC4KCiMjIyMgZXZlbnRzCkNvbnRhaW5zIGluZm9ybWF0aW9uIGFib3V0IGFsbCBldmVudHMuIFNsb3RzOgoKKiBgZGF0YWA6IGRhdGEuZnJhbWUgb2YgZGF0YSB1c2VkIHRvIHRyYWluIHRoZSBtb2RlbCB3aXRoIG9uZSByb3cgcGVyIGV2ZW50LiBDb2x1bW5zIGFyZToKCiAgICArIGBldmVudC5pZGAKICAgICsgYHNwZWNpZXNgCiAgICArIGV2ZXJ5IGNvbHVtbiBhZnRlciBpcyBldmVudC1zcGVjaWZpYyBkYXRhIHRvIGJlIHVzZWQgaW4gZXZlbnQtbGV2ZWwgY2xhc3NpZmllci4KKiBgZGV0ZWN0b3JzYDogbmFtZWQgbGlzdCBvZiBgZGV0ZWN0b3JgIG9iamVjdHMKKiBgaXMudHJhaW5pbmdgOiBsb2dpY2FsIC0gYXJlIHRoZXNlIGV2ZW50cyBmb3IgdHJhaW5pbmcgdGhlIG1vZGVsPyBtdXN0IGJlIHNldCB3aGVuIG9iamVjdCBpcyBtYWRlIGFuZCBjYW5ub3QgYmUgY2hhbmdlZC4KICAgICsgYFRSVUVgOiBhbnkgcm93cyB3aXRoIGBOQWAgaW4gdGhlIGBzcGVjaWVzYCBjb2x1bW4gb2YgYEBkYXRhYCBhcmUgZGVsZXRlZC4KICAgICsgYEZBTFNFYDogdGhlIGBtb2RlbGAgc2xvdCBoZXJlIGFuZCBpbiBlYWNoIGVsZW1lbnQgaW4gYEBkZXRlY3RvcnNgIG11c3QgYmUgYE5VTExgIGFuZCB0aGUgYHNwZWNpZXNgIGNvbHVtbiBpbiBgQGRhdGFgIG11c3QgaGF2ZSBhbGwgYE5Bc2AuCiogYG1vZGVsYDogcmFuZG9tRm9yZXN0IG9yIHJmUGVybXV0ZSBtb2RlbCBvYmplY3QuCgojIyMjIHByZWRpY3Rpb24KQ29udGFpbnMgc3BlY2llcyBwcmVkaWN0aW9ucyBmb3IgZXZlbnRzIHdoZXJlIGBAaXMudHJhaW5pbmdgIGlzIGBGQUxTRWAuIFNsb3RzOgoKKiBgcHJlZHNgOiBkYXRhLmZyYW1lIHdpdGggdGhlIGZvbGxvd2luZyBjb2x1bW5zOiAgCiAgICArIGBldmVudC5pZGA6IGluIHNhbWUgb3JkZXIgYXMgaW4gYGV2ZW50c0B0ZXN0YC4KICAgICsgYHNwZWNpZXNgOiBwcmVkaWN0ZWQgc3BlY2llcwogICAgKyBgcHJvYi5zcHBgOiBvbmUgY29sdW1uIHdpdGggdGhlIGFzc2lnbm1lbnQgcHJvYmFiaWxpdHkgZm9yIGVhY2ggc3BlY2llcyAic3BwIgoKIyMjIEZ1bmN0aW9ucwoKKiBgbG9hZERldGVjdG9ySW5mbyhldmVudHMsIGRldGVjdG9yLCBpbmZvKWA6IGxvYWQgbWV0YWRhdGEgaW5mb3JtYXRpb24gZm9yIGRldGVjdG9yLgoqIGBsb2FkRGV0ZWN0b3JEYXRhKGV2ZW50cywgZGV0ZWN0b3IsIGRhdGEpYDogbG9hZCBkYXRhIGZyb20gZGV0ZWN0b3IgZm9yIGVhY2ggY2FsbC4KKiBgbG9hZEV2ZW50RGF0YShldmVudHMpYDogbG9hZCBkYXRhIGZvciBldmVudHMuCiogYGNyZWF0ZUNsYXNzaWZpZXIoZXZlbnRzKWA6IG1hc3RlciBydW5uZXIgZm9yIHJ1bm5pbmcgYm90aCBkZXRlY3RvciBhbmQgZXZlbnQgY2xhc3NpZmljYXRpb24gbW9kZWxzLgoqIGBkZXRlY3RvclByb3BvcnRpb24oZXZlbnRzKWA6IGxvYWRzIGV2ZW50cyB3aXRoIHRvdGFsIHByb3BvcnRpb24gb2YgY2FsbHMgZm9yIGVhY2ggZGV0ZWN0b3IgaW4gYW4gZXZlbnQuICAKKiBgYXNzaWdubWVudE1lYW5zYDogbG9hZHMgZXZlbnRzIHdpdGggbWF0cml4IG9mIGFzc2lnbm1lbnQgcHJvYmFiaWxpdHkgbWVhbnMgZnJvbSBlYWNoIGRldGVjdG9yIGNsYXNzaWZpZXIgZm9yIGVhY2ggZXZlbnQuCiogYHByZWRpY3Qob2JqZWN0LCB0ZXN0LmV2ZW50cywgLi4uKWA6IFMzIG1ldGhvZCBmb3IgYGV2ZW50c2Agb2JqZWN0LiBgdGVzdC5ldmVudHNgIGlzIGFuIGBldmVudHNgIG9iamVjdCB3aGVyZSBgQGlzLnRyYWluaW5nYCBpcyBgRkFMU0VgLgoqIGBzdW1tYXJ5YDogUzMgbWV0aG9kcyBmb3IgZGV0ZWN0b3JzLCBldmVudHMsIGFuZCBwcmVkaWN0aW9ucy4gCiogYHBsb3RgOiBTMyBtZXRob2RzIG9mIHN1bW1hcnkgcGxvdHMgZm9yIGRldGVjdG9yIGFuZCBldmVudCBjbGFzc2lmaWVycywgYW5kIHByZWRpY3Rpb25zLgoK</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiQkFOVEVSIE5vdGVzIgpvdXRwdXQ6CiAgaHRtbF9ub3RlYm9vazogZGVmYXVsdAotLS0KYGBge3Igc2V0dXAsIGluY2x1ZGUgPSBGQUxTRX0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KAogIGNvbW1lbnQgPSAiIiwgCiAgZWNobyA9IFRSVUUsCiAgZmlnLmFsaWduID0gImxlZnQiLAogIGVycm9yID0gVFJVRQopCmBgYAoKIyMjIFM0IGNsYXNzZXMgZm9yIEJBTlRFUgoKIyMjIyBkZXRlY3RvcgpDb250YWlucyBpbmZvcm1hdGlvbiBmcm9tIGEgZGV0ZWN0b3IgZm9yIGEgZ2l2ZW4gY2FsbCB0eXBlIChlLmcuLCBjbGlja3MpLiBTbG90czoKCiogYGluZm9gOiBsaXN0IG9mIGluZm9ybWF0aW9uIGFib3V0IHRoZSBkZXRlY3Rvci4gbXVzdCBoYXZlIHVuaXF1ZSBgbmFtZWAsIGJ1dCBhbHNvIGNhbiBpbmNsdWRlIHVzZXJuYW1lLCBkYXRlL3RpbWUgcnVuLCBkZXRlY3RvciBzZXR0aW5ncywgZXRjLiBNYXkgY2hhbmdlIHRvIGp1c3QgYSBzbG90IGZvciAnbmFtZScgaWYgcmV0YWluaW5nIGV4dHJhIG1ldGFkYXRhIGlzbid0IG5lY2Vzc2FyeS4KKiBgZGF0YWA6IGRhdGEuZnJhbWUgd2l0aCBvbmUgcm93IHBlciBjYWxsLiBNYXkgb3B0aW9uYWxseSBiZSBhIGZpbGVuYW1lIGlmIGZ1bGwgZGF0YSBpcyB0b28gYmlnIHRvIHN0YXkgaW4gbWVtb3J5IHdpdGggZXZlcnl0aGluZyBlbHNlLiBDb2x1bW5zIGFyZToKICAgICsgYGV2ZW50LmlkYAogICAgKyBgY2FsbC5pZGA6IG11c3QgYmUgdW5pcXVlIGZvciBkZXRlY3Rvci4KICAgICsgZXZlcnkgY29sdW1uIGFmdGVyIGlzIGEgbWVhc3VyZW1lbnQgb2YgY2FsbCBgY2FsbC5pZGAgZnJvbSB0aGUgZGV0ZWN0b3IuICAKKiBgbW9kZWxgOiByYW5kb21Gb3Jlc3Qgb3IgcmZQZXJtdXRlIG1vZGVsIG9iamVjdC4KCmBgYHtyfQpzZXRDbGFzc1VuaW9uKCJjbGFzc2lmaWVyIiwgYygicmFuZG9tRm9yZXN0IiwgInJmUGVybXV0ZSIsICJyYW5nZXIiLCAiTlVMTCIpKQoKc2V0Q2xhc3MoCiAgImJhbnRlcl9kZXRlY3RvciIsCiAgc2xvdHMgPSBjKAogICAgaW5mbyA9ICJsaXN0IiwKICAgIGRhdGEgPSAiZGF0YS5mcmFtZSIsCiAgICBtb2RlbCA9ICJjbGFzc2lmaWVyIgogICkKKQoKc2V0VmFsaWRpdHkoCiAgImJhbnRlcl9kZXRlY3RvciIsCiAgbWV0aG9kID0gZnVuY3Rpb24ob2JqZWN0KSB7CiAgICB2YWxpZCA8LSBOVUxMCiAgICAKICAgICMgQ2hlY2sgQGluZm8gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KICAgIGlmKCEibmFtZSIgJWluJSBuYW1lcyhvYmplY3RAaW5mbykpIHsKICAgICAgdmFsaWQgPC0gYyh2YWxpZCwgIidpbmZvJyBtdXN0IGNvbnRhaW4gYW4gZWxlbWVudCBjYWxsZWQgJ25hbWUnIikKICAgIH0KICAgIAogICAgIyBDaGVjayBAZGF0YSAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogICAgaGFzLmV2ZW50LmlkIDwtICJldmVudC5pZCIgJWluJSBjb2xuYW1lcyhvYmplY3RAZGF0YSkKICAgIGhhcy5jYWxsLmlkIDwtICJjYWxsLmlkIiAlaW4lIGNvbG5hbWVzKG9iamVjdEBkYXRhKQogICAgaWYoIWhhcy5ldmVudC5pZCkgewogICAgICB2YWxpZCA8LSBjKHZhbGlkLCAiJ2RhdGEnIG11c3QgY29udGFpbiBhIGNvbHVtbiBjYWxsZWQgJ2V2ZW50LmlkJyIpCiAgICB9CiAgICBpZighaGFzLmNhbGwuaWQpIHsKICAgICAgdmFsaWQgPC0gYyh2YWxpZCwgIidkYXRhJyBtdXN0IGNvbnRhaW4gYSBjb2x1bW4gY2FsbGVkICdjYWxsLmlkJyIpCiAgICB9CiAgICBpZihoYXMuZXZlbnQuaWQgJiBoYXMuY2FsbC5pZCAmIG5jb2wob2JqZWN0QGRhdGEpID09IDIpIHsKICAgICAgdmFsaWQgPC0gYyh2YWxpZCwgIidkYXRhJyBtdXN0IGhhdmUgcHJlZGljdG9yIGNvbHVtbnMiKQogICAgfQogICAgICAKICAgICMgQ2hlY2sgQG1vZGVsIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KICAgIGlmKCFpcy5udWxsKG1vZGVsKSkgewogICAgICAjIGNoZWNrIHRoYXQgbW9kZWwgaXMgY29tcGF0YWJpbGUgd2l0aCBkYXRhCiAgICB9CiAgICAKICAgIGlmKGlzLm51bGwodmFsaWQpKSBUUlVFIGVsc2UgdmFsaWQKICB9CikKYGBgCgojIyMjIGV2ZW50cwpDb250YWlucyBpbmZvcm1hdGlvbiBhYm91dCBhbGwgZXZlbnRzLiBTbG90czoKCiogYGRhdGFgOiBkYXRhLmZyYW1lIG9mIGRhdGEgdXNlZCB0byB0cmFpbiB0aGUgbW9kZWwgd2l0aCBvbmUgcm93IHBlciBldmVudC4gU2hvdWxkIGJlIGFibGUgdG8ga2VlcCB0aGlzIGRhdGEuZnJhbWUgaW4gbWVtb3J5LCBidXQgY2FuIHN0b3JlIGZpbGVuYW1lIGlmIHRvbyBiaWcuIENvbHVtbnMgYXJlOgoKICAgICsgYGV2ZW50LmlkYAogICAgKyBgc3BlY2llc2AKICAgICsgZXZlcnkgY29sdW1uIGFmdGVyIGlzIGV2ZW50LXNwZWNpZmljIGRhdGEgdG8gYmUgdXNlZCBpbiBldmVudC1sZXZlbCBjbGFzc2lmaWVyLgoqIGBkZXRlY3RvcnNgOiBuYW1lZCBsaXN0IG9mIGBkZXRlY3RvcmAgb2JqZWN0cwoqIGBpcy50cmFpbmluZ2A6IGxvZ2ljYWwgLSBhcmUgdGhlc2UgZXZlbnRzIGZvciB0cmFpbmluZyB0aGUgbW9kZWw/IE11c3QgYmUgc2V0IHdoZW4gb2JqZWN0IGlzIG1hZGUgYW5kIGNhbm5vdCBiZSBjaGFuZ2VkLgogICAgKyBgVFJVRWA6IGFueSByb3dzIHdpdGggYE5BYCBpbiB0aGUgYHNwZWNpZXNgIGNvbHVtbiBvZiBgQGRhdGFgIGFyZSBkZWxldGVkLgogICAgKyBgRkFMU0VgOiB0aGUgYG1vZGVsYCBzbG90IGhlcmUgYW5kIGluIGVhY2ggZWxlbWVudCBpbiBgQGRldGVjdG9yc2AgbXVzdCBiZSBgTlVMTGAgYW5kIHRoZSBgc3BlY2llc2AgY29sdW1uIGluIGBAZGF0YWAgbXVzdCBoYXZlIGFsbCBgTkFzYC4KKiBgbW9kZWxgOiByYW5kb21Gb3Jlc3Qgb3IgcmZQZXJtdXRlIG1vZGVsIG9iamVjdC4KCiMjIyMgcHJlZGljdGlvbgpDb250YWlucyBzcGVjaWVzIHByZWRpY3Rpb25zIGZvciBldmVudHMgd2hlcmUgYEBpcy50cmFpbmluZ2AgaXMgYEZBTFNFYC4gU2xvdHM6CgoqIGBwcmVkc2A6IGRhdGEuZnJhbWUgd2l0aCB0aGUgZm9sbG93aW5nIGNvbHVtbnM6ICAKICAgICsgYGV2ZW50LmlkYDogaW4gc2FtZSBvcmRlciBhcyBpbiBgZXZlbnRzQHRlc3RgLgogICAgKyBgc3BlY2llc2A6IHByZWRpY3RlZCBzcGVjaWVzCiAgICArIGBwcm9iLnNwcGA6IG9uZSBjb2x1bW4gd2l0aCB0aGUgYXNzaWdubWVudCBwcm9iYWJpbGl0eSBmb3IgZWFjaCBzcGVjaWVzICJzcHAiCgojIyMgQWNjZXNzb3IgZnVuY3Rpb25zCgoqIGBkZXRlY3RvckluZm8oZXZlbnRzLCBkZXRlY3RvciwgaW5mbylgOiBsb2FkIG1ldGFkYXRhIGluZm9ybWF0aW9uIGZvciBkZXRlY3Rvci4KKiBgZGV0ZWN0b3JEYXRhKGV2ZW50cywgZGV0ZWN0b3IsIGRhdGEpYDogbG9hZCBkYXRhIGZyb20gZGV0ZWN0b3IgZm9yIGVhY2ggY2FsbC4KKiBgZXZlbnREYXRhKGV2ZW50cylgOiBsb2FkIGRhdGEgZm9yIGV2ZW50cy4KCiMjIyBDbGFzc2lmaWNhdGlvbiBmdW5jdGlvbnMKKiBgY3JlYXRlQ2xhc3NpZmllcihldmVudHMpYDogbWFzdGVyIHJ1bm5lciBmb3IgcnVubmluZyBib3RoIGRldGVjdG9yIGFuZCBldmVudCBjbGFzc2lmaWNhdGlvbiBtb2RlbHMuCiogYGRldGVjdG9yUHJvcG9ydGlvbihldmVudHMpYDogbG9hZHMgZXZlbnRzIHdpdGggdG90YWwgcHJvcG9ydGlvbiBvZiBjYWxscyBmb3IgZWFjaCBkZXRlY3RvciBpbiBhbiBldmVudC4gIAoqIGBhc3NpZ25tZW50TWVhbnNgOiBsb2FkcyBldmVudHMgd2l0aCBtYXRyaXggb2YgYXNzaWdubWVudCBwcm9iYWJpbGl0eSBtZWFucyBmcm9tIGVhY2ggZGV0ZWN0b3IgY2xhc3NpZmllciBmb3IgZWFjaCBldmVudC4KKiBgcHJlZGljdChvYmplY3QsIHRlc3QuZXZlbnRzLCAuLi4pYDogUzMgbWV0aG9kIGZvciBgZXZlbnRzYCBvYmplY3QuIGB0ZXN0LmV2ZW50c2AgaXMgYW4gYGV2ZW50c2Agb2JqZWN0IHdoZXJlIGBAaXMudHJhaW5pbmdgIGlzIGBGQUxTRWAuCgojIyMgU3VtbWFyeSBmdW5jdGlvbnMKKiBgc3VtbWFyeWA6IFMzIG1ldGhvZHMgZm9yIGRldGVjdG9ycywgZXZlbnRzLCBhbmQgcHJlZGljdGlvbnMuIAoqIGBwbG90YDogUzMgbWV0aG9kcyBvZiBzdW1tYXJ5IHBsb3RzIGZvciBkZXRlY3RvciBhbmQgZXZlbnQgY2xhc3NpZmllcnMsIGFuZCBwcmVkaWN0aW9ucy4KCg==</div>
 
 
 
