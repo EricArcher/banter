@@ -40,53 +40,9 @@ Contains information from a detector for a given call type (e.g., clicks). Slots
     + every column after is a measurement of call `call.id` from the detector.  
 * `model`: randomForest or rfPermute model object.
 
-```{r}
-setClassUnion("classifier", c("randomForest", "rfPermute", "ranger", "NULL"))
-
-setClass(
-  "banter_detector",
-  slots = c(
-    info = "list",
-    data = "data.frame",
-    model = "classifier"
-  )
-)
-
-setValidity(
-  "banter_detector",
-  method = function(object) {
-    valid <- NULL
-    
-    # Check @info -----------------------
-    if(!"name" %in% names(object@info)) {
-      valid <- c(valid, "'info' must contain an element called 'name'")
-    }
-    
-    # Check @data -----------------------
-    has.event.id <- "event.id" %in% colnames(object@data)
-    has.call.id <- "call.id" %in% colnames(object@data)
-    if(!has.event.id) {
-      valid <- c(valid, "'data' must contain a column called 'event.id'")
-    }
-    if(!has.call.id) {
-      valid <- c(valid, "'data' must contain a column called 'call.id'")
-    }
-    if(has.event.id & has.call.id & ncol(object@data) == 2) {
-      valid <- c(valid, "'data' must have predictor columns")
-    }
-      
-    # Check @model ----------------------
-    if(!is.null(model)) {
-      # check that model is compatabile with data
-    }
-    
-    if(is.null(valid)) TRUE else valid
-  }
-)
-```
 
 #### events
-Contains information about all events. Slots:
+Contains information about all events. Will need to accomodate multi-species events. Perhaps with a list column for "species" in the "@data" slot. Slots:
 
 * `data`: data.frame of data used to train the model with one row per event. Should be able to keep this data.frame in memory, but can store filename if too big. Columns are:
 
