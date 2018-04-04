@@ -14,3 +14,4 @@ meanVotes <- function(x) {
   colnames(df) <- paste0(x@name, ".", colnames(df))
   cbind(event.id = rownames(df), df, stringsAsFactors = FALSE)
 }
+

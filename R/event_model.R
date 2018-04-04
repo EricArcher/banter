@@ -12,6 +12,9 @@
 #'
 #' @author Eric Archer \email{eric.archer@@noaa.gov}
 #' 
+#' @importFrom dplyr n
+#' @importFrom magrittr %>%
+#' @importFrom plyr .
 #' @importFrom randomForest randomForest
 #' @importFrom methods setClass setValidity new
 #' @export event_model
@@ -56,5 +59,50 @@ methods::setMethod(
     .Object@detectors <- list()
     .Object@model <- NULL
     .Object
+  }
+)
+
+methods::setMethod(
+  "show",
+  "event_model",
+  function(object) {
+    df <- object@data %>% 
+      dplyr::group_by(.data$species) %>% 
+      dplyr::summarize(events = n()) %>% 
+      dplyr::ungroup() %>% 
+      as.data.frame
+    
+    err.rate <- NULL
+    if(length(object@detectors) > 0 & !is.null(object@detectors)) {    
+      df <- df %>% 
+        dplyr::left_join(
+          object@data %>% 
+            dplyr::select(.data$species, .data$event.id) %>% 
+            dplyr::left_join(numCalls(object), by = "event.id") %>% 
+            dplyr::select(-.data$event.id) %>% 
+            tidyr::gather("detector", "n", -.data$species) %>% 
+            dplyr::group_by(.data$species, .data$detector) %>% 
+            dplyr::summarize(n = sum(n)) %>% 
+            dplyr::ungroup() %>% 
+            tidyr::spread("detector", "n"),
+          by = "species"
+        ) %>% 
+        as.data.frame()
+      
+      err.rate <- sapply(object@detectors, function(x) {
+        oob <- x@model$err.rate[, "OOB"]
+        oob[length(oob)]
+      })
+      if(!is.null(object@model)) {
+        oob <- object@model$err.rate[, "OOB"]
+        err.rate <- c(event = oob[length(oob)], err.rate)
+      }
+    }
+    
+    print(df)
+    if(!is.null(err.rate)) {
+      cat("\nModel error rates:\n")
+      print(round(err.rate, 3))
+    }
   }
 )

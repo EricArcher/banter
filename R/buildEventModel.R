@@ -9,29 +9,29 @@
 #' 
 #' @importFrom magrittr %>%
 #' @importFrom plyr .
-#' @importFrom rlang .data :=
-#' @importFrom stats complete.cases
+#' @importFrom rlang .data
+#' @importFrom stats complete.cases setNames
 #' @export
 #' 
 buildEventModel <- function(x, ntree, sampsize = 1) {
   # Get proportion of detections by detector for each event
-  detector.prop <- do.call(rbind, lapply(x@detectors, function(d) {
-    table(event.id = d@ids$event.id) %>% 
-      as.data.frame(stringsAsFactors = FALSE) %>% 
-      dplyr::right_join(dplyr::select(x@data, .data$event.id), by = "event.id") %>% 
-      dplyr::rename(!!d@name := .data$Freq) %>% 
-      tidyr::gather("detector", "freq", -.data$event.id)
-  })) %>% 
-    dplyr::mutate(detector = paste0(.data$detector, ".proportion")) %>% 
-    tidyr::spread("detector", "freq") %>% 
-    replace(is.na(.), 0)
-  detector.prop[, -1] <- prop.table(as.matrix(detector.prop[, -1]), 1)
+  detector.prop <- numCalls(x)
+  detector.prop <- cbind(
+    event.id = detector.prop$event.id,
+    detector.prop %>% 
+      dplyr::select(-.data$event.id) %>% 
+      as.matrix() %>% 
+      prop.table(1) %>% 
+      as.data.frame() %>% 
+      setNames(paste0(colnames(.), ".proportion"))
+  )
   
   # Get vote means for each event
-  vote.means <- do.call(rbind, lapply(x@detectors, function(d) {
+  vote.means <- lapply(x@detectors, function(d) {
     meanVotes(d) %>% 
       tidyr::gather("detector.species", "prob", -.data$event.id)
-  })) %>% 
+  }) %>% 
+    dplyr::bind_rows() %>% 
     tidyr::spread("detector.species", "prob") %>% 
     replace(is.na(.), 0)
   

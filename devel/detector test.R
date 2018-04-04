@@ -20,6 +20,9 @@ ev.mdl <- survey$events %>%
   event_model() %>% 
   addDetectorModel("bp", survey$detectors$bp, ntree, sampsize) %>% 
   addDetectorModel("dw", survey$detectors$dw, ntree, sampsize) %>% 
-  addDetectorModel("ec", survey$detectors$ec, ntree, sampsize)
+  addDetectorModel("ec", survey$detectors$ec, ntree, sampsize) %>% 
+  buildEventModel(ev.mdl, 1000, 2)
 
-mdl <- buildEventModel(ev.mdl, 1000, 2)
+ev.mdl
+
+save.image("test ws 2.rdata")
