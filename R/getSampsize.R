@@ -1,45 +1,36 @@
 #' @title Get Balanced Sample Size
-#' @description return a vector of equal sample sizes for balanced Random Forest 
-#'   model. Takes vector of discrete values or frequency table as well as 
-#'   desired sample size percentage and minimum sample size.
+#' @description Produces a vector of equal sample sizes for balanced 
+#'   Random Forest model.
 #'   
-#' @param x vector of classes as response values or table of frequencies 
-#'   (output of \code{\link{table}}.
-#' @param samp.pct desired percentage to use from smallest class (\code{0:1}).
-#' @param min.samp.n minimum permitted sample size.
+#' @param x vector of discrete class values or table of frequencies as output 
+#'   of \code{\link{table}}.
+#' @param req.sampsize desired number of samples per class. If value is between 
+#'   0 and 1, then it is treated as a percentage and sample size will be this 
+#'   value times the smallest class frequency rounded to the nearest whole 
+#'   number.
+#'   
+#' @details \code{req.sampsize} must be smaller than smallest class frequency. If
+#'   \code{req.sampsize} is a percentage, then resulting rounded sample size 
+#'   must be at least 1.
 #' 
-#' @details Returns vector of \code{floor(samp.pct * smallest class frequency)}
-#'  that is as long as there are unique classes in \code{x}. Will throw an error 
-#'  if this number is < \code{min.samp.n}.
-#' @author Eric Archer \email{eric.archer@@noaa.gov}
-#' 
-#' @export
-#' 
-getSampsize <- function(x, samp.pct, min.samp.n = 1) {
-  if(min.samp.n < 1) stop("min.samp.n must be >= 1")
-
+getSampsize <- function(x, req.sampsize) {
+  if(req.sampsize < 0) stop("'req.sampsize' must be > 0")
+  
   freq <- if(is.table(x)) x else table(x)
   
-  # check that minimum frequency is greater than minimum sample size
-  min.freq <- min(freq)
-  if(any(freq <= min.samp.n)) {
-    stop(paste0(
-      "minimum frequency (", min.freq, ") <= min.samp.n (", min.samp.n, ")"
-    ))
+  n <- if(req.sampsize >= 1) {
+    req.sampsize
+  } else {
+    round(min(freq) * req.sampsize, 0)
   }
   
-  # check that sample size is same or greater than minimum sample size
-  sampsize <- floor(min(freq * samp.pct))
-  if(sampsize < min.samp.n) {
-    min.pct <- min.samp.n / min.freq
+  if(n < 1 | n >= min(freq)) {
     stop(paste0(
-      "sample size (", sampsize, ") < min.samp.n (", min.samp.n, "), ",
-      "Decrease min.samp.n, or raise samp.pct to ", min.pct, "\n",
-      "Frequencies:\n",
+      "sampsize = ", n, 
+      " (is < 1 or >= minimum frequency):\n",
       paste0(names(freq), ":", freq, "\n", collapse = "")
     ))
   }
   
-  rep(sampsize, length(freq))
+  rep(n, length(freq))
 }
-  

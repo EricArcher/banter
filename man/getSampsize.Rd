@@ -4,25 +4,25 @@
 \alias{getSampsize}
 \title{Get Balanced Sample Size}
 \usage{
-getSampsize(x, samp.pct, min.samp.n = 1)
+getSampsize(x, req.sampsize)
 }
 \arguments{
-\item{x}{vector of classes as response values or table of frequencies 
-(output of \code{\link{table}}.}
+\item{x}{vector of discrete class values or table of frequencies as output 
+of \code{\link{table}}.}
 
-\item{samp.pct}{desired percentage to use from smallest class (\code{0:1}).}
-
-\item{min.samp.n}{minimum permitted sample size.}
+\item{req.sampsize}{desired number of samples per class. If value is between 
+0 and 1, then it is treated as a percentage and sample size will be this 
+value times the smallest class frequency rounded to the nearest whole 
+number.}
 }
 \description{
-return a vector of equal sample sizes for balanced Random Forest 
-  model. Takes vector of discrete values or frequency table as well as 
-  desired sample size percentage and minimum sample size.
+Produces a vector of equal sample sizes for balanced 
+  Random Forest model.
 }
 \details{
-Returns vector of \code{floor(samp.pct * smallest class frequency)}
- that is as long as there are unique classes in \code{x}. Will throw an error 
- if this number is < \code{min.samp.n}.
+\code{req.sampsize} must be smaller than smallest class frequency. If
+  \code{req.sampsize} is a percentage, then resulting rounded sample size 
+  must be at least 1.
 }
 \author{
 Eric Archer \email{eric.archer@noaa.gov}
