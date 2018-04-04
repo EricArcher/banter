@@ -10,5 +10,5 @@ meanVotes(x)
 \item{x}{detector_model object}
 }
 \description{
-mean votes
+Returns matrix of mean species vote percentage by event
 }

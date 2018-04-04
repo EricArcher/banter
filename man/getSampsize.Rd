@@ -24,6 +24,3 @@ Produces a vector of equal sample sizes for balanced
   \code{req.sampsize} is a percentage, then resulting rounded sample size 
   must be at least 1.
 }
-\author{
-Eric Archer \email{eric.archer@noaa.gov}
-}

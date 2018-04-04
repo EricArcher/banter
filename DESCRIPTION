@@ -6,13 +6,18 @@ Version: 0.0.1
 Authors@R: c(
   EA = person("Eric", "Archer", email = "eric.archer@noaa.gov", role = c("aut", "cre")),
   TS = person("Taiki", "Sakai", email = "taiki.sakai@noaa.gov", role = c("aut")))
+Depends:
+  magrittr,
+  plyr
 Imports:
   dplyr,
-  magrittr,
   methods,
   randomForest,
   ranger,
   rfPermute,
-  rlang
+  rlang,
+  stats,
+  tibble,
+  tidyr
 License: GNU General Public License
 RoxygenNote: 6.0.1

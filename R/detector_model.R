@@ -1,6 +1,3 @@
-setOldClass(c("randomForest", "randomForest.formula", "rfPermute", "ranger"))
-setClassUnion("classifier", c("randomForest", "randomForest.formula", "rfPermute", "ranger", "NULL"))
-
 #' @title Detector classification model
 #' @description Create classification model for a detector
 #'
@@ -49,9 +46,9 @@ methods::setValidity(
   }
 )
 
+#' @importFrom magrittr %>%
 #' @importFrom randomForest randomForest
 #' @importFrom rlang .data
-#' @importFrom magrittr %>%
 #' 
 methods::setMethod(
   "initialize", 

@@ -1,19 +1,25 @@
 rm(list = ls())
-library(tidyverse)
 library(banter)
 
-bp <- read.csv("detector - bp.csv", stringsAsFactors = FALSE)
-dw <- read.csv("detector - dw.csv", stringsAsFactors = FALSE)
-ec <- read.csv("detector - ec.csv", stringsAsFactors = FALSE)
-event.df <- read.csv("event.df.csv", stringsAsFactors = FALSE)
+survey <- list(
+  events = read.csv("data/event.df.csv", stringsAsFactors = FALSE),
+  detectors = list(
+    bp = read.csv("data/detector - bp.csv", stringsAsFactors = FALSE),
+    dw = read.csv("data/detector - dw.csv", stringsAsFactors = FALSE),
+    ec = read.csv("data/detector - ec.csv", stringsAsFactors = FALSE)
+  )
+)
 
-ev.sp.df <- event.df %>% 
-  filter(training) %>% 
-  select(event.id, species)
-
-ntree <- 50
+ntree <- 1000
 sampsize <- 1
 
-bp.mdl <- detector_model("bp", bp, ev.sp.df, ntree, sampsize)
-dw.mdl <- detector_model("dw", dw, ev.sp.df, ntree, sampsize)
-ec.mdl <- detector_model("ec", ec, ev.sp.df, ntree, sampsize)
+ev.mdl <- survey$events %>% 
+  filter(training) %>% 
+  select(event.id, species) %>% 
+  mutate(species = gsub(" ", "", species)) %>% 
+  event_model() %>% 
+  addDetectorModel("bp", survey$detectors$bp, ntree, sampsize) %>% 
+  addDetectorModel("dw", survey$detectors$dw, ntree, sampsize) %>% 
+  addDetectorModel("ec", survey$detectors$ec, ntree, sampsize)
+
+mdl <- buildEventModel(ev.mdl, 1000, 2)
