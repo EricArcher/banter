@@ -58,8 +58,4 @@ predict.event_model <- function(object, new.data, ...) {
 #' @name predict
 #' @rdname predict
 #' @aliases predict,event_model-method
-methods::setMethod(
-  "predict", 
-  "event_model", 
-  predict.event_model
-) 
+methods::setMethod("predict", "event_model", predict.event_model) 

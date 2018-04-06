@@ -35,6 +35,7 @@
 #' Returns matrix of mean species vote percentage by event
 #' @rdname internals
 #' @keywords internal
+#' 
 .meanVotes <- function(x) {
   sapply(names(x), function(d) {
     x[[d]] %>% 
@@ -51,11 +52,9 @@
 
 #' Returns matrix of number of calls by each detector for each event
 #' @rdname internals
-#' 
 #' @importFrom magrittr %>%
 #' @importFrom plyr .
 #' @importFrom rlang .data :=
-#' 
 #' @keywords internal
 #' 
 .numCalls <- function(x) {
@@ -71,11 +70,9 @@
 
 #' Returns matrix of number of calls by each detector for each event
 #' @rdname internals
-#' 
 #' @importFrom magrittr %>%
 #' @importFrom plyr .
 #' @importFrom rlang .data :=
-#' 
 #' @keywords internal
 #' 
 .propCalls <- function(x) {

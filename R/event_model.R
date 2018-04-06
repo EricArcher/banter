@@ -15,7 +15,7 @@
 #' @importFrom rlang .data
 #' 
 #' @exportClass event_model
-#' @export
+#' @export event_model
 #' 
 event_model <- methods::setClass(
   "event_model",

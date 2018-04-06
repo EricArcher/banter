@@ -15,8 +15,18 @@ detectors <- list(
   ec = readDetector("data/detector - ec.csv", "ec")
 )
 
-ntree <- 50
-sampsize <- 100
+test.data <- list(
+  event = event.df %>% 
+    filter(!training) %>% 
+    select(event.id, species) %>% 
+    mutate(species = gsub(" ", "", species)),
+  detectors = sapply(detectors, function(x) {
+    filter(x, event.id %in% filter(event.df, !training)$event.id)
+  })
+)
+
+ntree <- 1000
+sampsize <- 5
 
 ev.mdl <- event.df %>% 
   filter(training) %>% 
@@ -29,23 +39,17 @@ ev.mdl <- addDetectorModel(ev.mdl, detectors$dw, ntree, sampsize)
 ev.mdl <- addDetectorModel(ev.mdl, detectors$ec, ntree, sampsize) 
 ev.mdl
 
-ev.mdl <- buildEventModel(ev.mdl, 50, 3)
-ev.mdl
+ev.mdl <- buildEventModel(ev.mdl, 1000, 3)
+summary(ev.mdl)
 
-test.data <- list(
-  event = event.df %>% 
-    filter(!training) %>% 
-    select(event.id, species) %>% 
-    mutate(species = gsub(" ", "", species)),
-  detectors = sapply(detectors, function(x) {
-    filter(x, event.id %in% filter(event.df, !training)$event.id)
-  })
-)
-
-predict(ev.mdl, test.data)
+test.pred <- predict(ev.mdl, test.data)
+test.pred
 
 # ev.mdl2 <- addDetectorModel(ev.mdl, detectors, ntree, sampsize)
-# ev.mdl2 <- buildEventModel(ev.mdl2, 5000, 3)
-# ev.mdl2
+# ev.mdl2 <- buildEventModel(ev.mdl2, 50, 3)
+# summary(ev.mdl2)
+# 
+# test.pred2 <- predict(ev.mdl2, test.data)
+# test.pred2
 
 save.image("data/test ws.rdata")
