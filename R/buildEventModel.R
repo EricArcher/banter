@@ -14,57 +14,40 @@
 #' @export
 #' 
 buildEventModel <- function(x, ntree, sampsize = 1) {
-  # Get proportion of detections by detector for each event
-  detector.prop <- numCalls(x)
-  detector.prop <- cbind(
-    event.id = detector.prop$event.id,
-    detector.prop %>% 
-      dplyr::select(-.data$event.id) %>% 
-      as.matrix() %>% 
-      prop.table(1) %>% 
-      as.data.frame() %>% 
-      setNames(paste0(colnames(.), ".proportion"))
-  )
+  detector.prop <- sapply(x@detectors, function(d) {
+    d@ids$event.id
+  }, simplify = FALSE) %>% 
+    .propCalls()
   
-  # Get vote means for each event
-  vote.means <- lapply(x@detectors, function(d) {
-    meanVotes(d) %>% 
-      tidyr::gather("detector.species", "prob", -.data$event.id)
-  }) %>% 
-    dplyr::bind_rows() %>% 
-    tidyr::spread("detector.species", "prob") %>% 
-    replace(is.na(.), 0)
+  detector.votes <- sapply(x@detectors, function(d) {
+    cbind(
+      event.id = d@ids$event.id, 
+      as.data.frame(d@model$votes),
+      stringsAsFactors = FALSE
+    )
+  }, simplify = FALSE) %>% 
+    .meanVotes()
   
   df <- x@data %>% 
     dplyr::left_join(detector.prop, by = "event.id") %>% 
-    dplyr::left_join(vote.means, by = "event.id") %>% 
-    dplyr::filter(complete.cases(.))
+    dplyr::left_join(detector.votes, by = "event.id") %>% 
+    dplyr::filter(complete.cases(.)) %>% 
+    dplyr::mutate(species = as.character(.data$species)) 
   
-  freq <- table(df$species)
-  to.remove <- names(freq)[freq <= sampsize]
-  if(length(to.remove) > 0) {
-    warning(
-      "some species have <= ", sampsize, " events, and have been removed:\n",
-      paste0(names(freq[to.remove]), ":", freq[to.remove], "\n", collapse = "")
-    )
-  }
+  sampsize <- .getSampsize(df$species, sampsize, "Event model")
   
   df <- df %>% 
-    dplyr::filter(!.data$species %in% to.remove) %>% 
+    dplyr::filter(.data$species %in% names(sampsize)) %>%
     dplyr::mutate(species = factor(.data$species)) %>% 
     tibble::column_to_rownames("event.id") %>% 
     as.data.frame() %>% 
     droplevels()
   
-  if(length(unique(df$species)) < 2) {
-    stop("need at least two species to build event classifier")
-  }
-  
   x@model <- randomForest::randomForest(
     species ~ ., 
     data = df,
     ntree = ntree, 
-    sampsize = getSampsize(df$species, sampsize), 
+    sampsize = sampsize, 
     replace = FALSE,
     importance = TRUE
   )

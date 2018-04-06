@@ -1,11 +1,6 @@
 #' @title Event classification model
 #' @description Create classification model for events
 #'
-#' @param detector.models measurement data for detections
-#' @param event.data data.frame associating event.id with species
-#' @param ntree number of trees in model
-#' @param sampsize number or fraction of samples to use in each tree
-#'
 #' @slot data data.frame of event.ids and call.ids for calls in detector
 #' @slot detectors list of \code{detector_model} objects
 #' @slot model classification model
@@ -14,10 +9,12 @@
 #' 
 #' @importFrom dplyr n
 #' @importFrom magrittr %>%
+#' @importFrom methods setClass setValidity new setMethod
 #' @importFrom plyr .
 #' @importFrom randomForest randomForest
-#' @importFrom methods setClass setValidity new
-#' @export event_model
+#' @importFrom rlang .data
+#' 
+#' @exportClass event_model
 #' @export
 #' 
 event_model <- methods::setClass(
@@ -78,15 +75,16 @@ methods::setMethod(
         dplyr::left_join(
           object@data %>% 
             dplyr::select(.data$species, .data$event.id) %>% 
-            dplyr::left_join(numCalls(object), by = "event.id") %>% 
+            dplyr::left_join(.numCalls(object), by = "event.id") %>% 
             dplyr::select(-.data$event.id) %>% 
             tidyr::gather("detector", "n", -.data$species) %>% 
             dplyr::group_by(.data$species, .data$detector) %>% 
-            dplyr::summarize(n = sum(n)) %>% 
+            dplyr::summarize(n = sum(n, na.rm = TRUE)) %>% 
             dplyr::ungroup() %>% 
             tidyr::spread("detector", "n"),
           by = "species"
         ) %>% 
+        dplyr::select("species", "events", names(object@detectors)) %>% 
         as.data.frame()
       
       err.rate <- sapply(object@detectors, function(x) {
@@ -95,7 +93,10 @@ methods::setMethod(
       })
       if(!is.null(object@model)) {
         oob <- object@model$err.rate[, "OOB"]
-        err.rate <- c(event = oob[length(oob)], err.rate)
+        err.rate <- c(
+          event = oob[length(oob)], 
+          err.rate[names(object@detectors)]
+        )
       }
     }
     

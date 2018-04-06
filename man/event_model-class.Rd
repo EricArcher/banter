@@ -5,15 +5,6 @@
 \alias{event_model-class}
 \alias{event_model}
 \title{Event classification model}
-\arguments{
-\item{detector.models}{measurement data for detections}
-
-\item{event.data}{data.frame associating event.id with species}
-
-\item{ntree}{number of trees in model}
-
-\item{sampsize}{number or fraction of samples to use in each tree}
-}
 \description{
 Create classification model for events
 }

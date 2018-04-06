@@ -5,20 +5,20 @@
 \alias{removeDetectorModel}
 \title{Add a Detector Model}
 \usage{
-addDetectorModel(x, name, data, ntree, sampsize = 1)
+addDetectorModel(x, data, ntree, sampsize = 1)
 
 removeDetectorModel(x, name)
 }
 \arguments{
 \item{x}{a \code{\link{event_model}} object.}
 
-\item{name}{name of detector}
-
 \item{data}{detector data.frame}
 
 \item{ntree}{number of trees}
 
 \item{sampsize}{number or fraction of samples to use in each tree}
+
+\item{name}{name of detector}
 }
 \description{
 Add a detector model to an event model

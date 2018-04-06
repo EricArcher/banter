@@ -13,10 +13,8 @@
 #'
 #' @author Eric Archer \email{eric.archer@@noaa.gov}
 #' 
+#' @importFrom methods setClass setValidity setMethod new
 #' @importFrom randomForest randomForest
-#' @importFrom methods setClass setValidity new
-#' @export detector_model
-#' @export
 #' 
 detector_model <- methods::setClass(
   "detector_model",
@@ -43,38 +41,5 @@ methods::setValidity(
     }
     
     if(is.null(valid)) TRUE else valid
-  }
-)
-
-#' @importFrom magrittr %>%
-#' @importFrom randomForest randomForest
-#' @importFrom rlang .data
-#' 
-methods::setMethod(
-  "initialize", 
-  "detector_model",
-  function(
-    .Object,
-    name, detector.data, event.data, 
-    ntree, sampsize = 1, ...
-  ) {
-    df <- detector.data %>% 
-      dplyr::inner_join(event.data, by = "event.id") %>% 
-      dplyr::mutate(species = factor(.data$species)) %>% 
-      as.data.frame
-    
-    rf <- randomForest::randomForest(
-      species ~ ., 
-      data = dplyr::select(df, -.data$event.id, -.data$call.id),
-      ntree = ntree, 
-      sampsize = getSampsize(df$species, sampsize), 
-      replace = FALSE,
-      importance = TRUE
-    )
-    
-    .Object@name <- name
-    .Object@model <- rf
-    .Object@ids <- df[, c("event.id", "call.id")]
-    .Object
   }
 )
