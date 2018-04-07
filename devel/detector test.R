@@ -25,8 +25,8 @@ test.data <- list(
   })
 )
 
-ntree <- 1000
-sampsize <- 5
+ntree <- 3000
+sampsize <- 10
 
 ev.mdl <- event.df %>% 
   filter(training) %>% 
@@ -39,11 +39,15 @@ ev.mdl <- addDetectorModel(ev.mdl, detectors$dw, ntree, sampsize)
 ev.mdl <- addDetectorModel(ev.mdl, detectors$ec, ntree, sampsize) 
 ev.mdl
 
-ev.mdl <- buildEventModel(ev.mdl, 1000, 3)
+ev.mdl <- buildEventModel(ev.mdl, 5000, 3)
 summary(ev.mdl)
 
 test.pred <- predict(ev.mdl, test.data)
 test.pred
+
+test.data$event %>% 
+  select(event.id, species) %>% 
+  right_join(test.pred, by = "event.id")
 
 # ev.mdl2 <- addDetectorModel(ev.mdl, detectors, ntree, sampsize)
 # ev.mdl2 <- buildEventModel(ev.mdl2, 50, 3)

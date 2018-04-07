@@ -17,12 +17,13 @@ devtools::install_github('ericarcher/banter', build_vignettes = TRUE)
 
 ## To Do
 
-* Adding additional event-level data (e.g., calling rate)?
-* What output needs to be available?
+* Adding additional event-level data (e.g., calling rate for each detector)?
+* What text output needs to be available (data.frames to save)?
 * Complete function argument checks
-* Adding plots
+* Summary plots
 * Example data
 * Unit tests
+* Vignettes
 
 ## Contact
 
@@ -33,7 +34,7 @@ devtools::install_github('ericarcher/banter', build_vignettes = TRUE)
 ## Reference
 Rankin, S., Archer, F., Keating, J. L., Oswald, J. N., Oswald, M., Curtis, A. and Barlow, J. (2017) Acoustic classification of dolphins in the California Current using whistles, echolocation clicks, and burst pulses. Mar Mam Sci, 33: 520-540. [doi:10.1111/mms.12381](https://onlinelibrary.wiley.com/doi/abs/10.1111/mms.12381)
 
-## Examples
+## Tutorial
 
 
 ## version 0.0.1 (current on GitHub)
