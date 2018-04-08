@@ -27,6 +27,7 @@ addBanterDetector <- function(x, data, ntree, sampsize = 1) {
     name <- attr(data, "name")
     x@detectors[[name]] <- .runDetectorModel(x, name, data, ntree, sampsize)
   }
+  x@detectors <- x@detectors[order(names(x@detectors))]
   x@model <- NULL
   x
 }
@@ -36,6 +37,7 @@ addBanterDetector <- function(x, data, ntree, sampsize = 1) {
 #' 
 removeBanterDetector <- function(x, name) {
   x@detectors[[name]] <- NULL
+  if(length(x@detectors) == 0) x@detectors <- NULL
   x@model <- NULL
   x
 }

@@ -36,10 +36,14 @@ methods::setValidity(
     }
     
     # Check @detectors
-    if(length(object@detectors) > 0) {
-      classes <- unlist(sapply(object@detectors, class))
-      if(any(classes != "detector_model")) {
-        valid <- c(valid, "all elements in slot '@detectors' must be a 'detector_model' object")
+    if(!is.null(object@detectors)) {
+      if(length(obect@detectors) == 0) {
+        valid <- c(valid, "slot '@detectors' can't be an empty list")
+      } else {
+        classes <- unlist(sapply(object@detectors, class))
+        if(any(classes != "detector_model")) {
+          valid <- c(valid, "all elements in slot '@detectors' must be a 'detector_model' object")
+        }
       }
     }
     
@@ -51,28 +55,12 @@ methods::setMethod(
   "show",
   "banter_model",
   function(object) {
-    df <- object@data %>% 
-      dplyr::group_by(.data$species) %>% 
-      dplyr::summarize(events = n()) %>% 
-      dplyr::ungroup() %>% 
-      as.data.frame
+    df <- numEvents(object)
     
     err.rate <- NULL
-    if(length(object@detectors) > 0 & !is.null(object@detectors)) {    
+    if(!is.null(object@detectors)) {    
       df <- df %>% 
-        dplyr::left_join(
-          object@data %>% 
-            dplyr::select(.data$species, .data$event.id) %>% 
-            dplyr::left_join(.numCalls(object), by = "event.id") %>% 
-            dplyr::select(-.data$event.id) %>% 
-            tidyr::gather("detector", "n", -.data$species) %>% 
-            dplyr::group_by(.data$species, .data$detector) %>% 
-            dplyr::summarize(n = sum(n, na.rm = TRUE)) %>% 
-            dplyr::ungroup() %>% 
-            tidyr::spread("detector", "n"),
-          by = "species"
-        ) %>% 
-        dplyr::select("species", "events", names(object@detectors)) %>% 
+        dplyr::left_join(numCalls(object), by = "species") %>% 
         as.data.frame()
       
       err.rate <- sapply(object@detectors, function(x) {
@@ -81,10 +69,7 @@ methods::setMethod(
       })
       if(!is.null(object@model)) {
         oob <- object@model$err.rate[, "OOB"]
-        err.rate <- c(
-          event = oob[length(oob)], 
-          err.rate[names(object@detectors)]
-        )
+        err.rate <- c(event = oob[length(oob)], err.rate)
       }
     }
     

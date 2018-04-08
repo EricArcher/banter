@@ -23,12 +23,12 @@ summary.banter_model <- function(object, detector = "event", n = 0.1, ...) {
   print(object)
   rf <- getBanterModel(object, detector)
   if(!is.null(rf)) {  
-    cat("\n")
+    cat("\nModel diagnostics:\n")
     print(rbind(
       oob.error = .rfErrorSmry(rf, n),
       inbag.pct = .inBagSmry(rf)
     ))
-    cat("\n")
+    cat("\nConfusion matrix:\n")
     print(rfPermute::confusionMatrix(rf))
   }
 }

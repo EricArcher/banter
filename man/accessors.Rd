@@ -3,14 +3,25 @@
 \name{accessors}
 \alias{accessors}
 \alias{getBanterModel}
+\alias{numEvents}
+\alias{numCalls}
+\alias{propCalls}
 \title{BANTER class accessor functions}
 \usage{
 getBanterModel(x, model = "event")
+
+numEvents(x, model = "event")
+
+numCalls(x, by = c("species", "event"))
+
+propCalls(x, by = c("species", "event"))
 }
 \arguments{
 \item{x}{a \code{\link{banter_model}} object.}
 
 \item{model}{model to retrieve.}
+
+\item{by}{return summary by \code{"species"} or \code{"event"}.}
 }
 \description{
 Accessor functions for components of BANTER models

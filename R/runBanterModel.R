@@ -14,14 +14,9 @@
 #' @export
 #' 
 runBanterModel <- function(x, ntree, sampsize = 1) {
-  if(is.null(x@detectors) | length(x@detectors) == 0) {
-    stop("no detector models found. see '?addBanterDetector'")
-  }
+  .stopIfNoDetectors(x)
   
-  detector.prop <- sapply(x@detectors, function(d) {
-    d@ids$event.id
-  }, simplify = FALSE) %>% 
-    .propCalls()
+  detector.prop <- propCalls(x, "event")
   
   detector.votes <- sapply(x@detectors, function(d) {
     cbind(
@@ -53,7 +48,8 @@ runBanterModel <- function(x, ntree, sampsize = 1) {
     ntree = ntree, 
     sampsize = sampsize, 
     replace = FALSE,
-    importance = TRUE
+    importance = TRUE,
+    proxmity = TRUE
   )
   
   x

@@ -1,3 +1,25 @@
+#' Checks to make sure 'model' is a valid model name
+#' @rdname internals
+#' @keywords internal
+#' 
+.checkModelName <- function(x, model) {
+  if(model != "event" & !model %in% names(x@detectors)) {
+    stop(paste0("model '", model, "' not found."))
+  }
+  invisible(TRUE)
+}
+
+# Check that detectors are present
+#' @rdname internals
+#' @keywords internal
+#' 
+.stopIfNoDetectors <- function(x) {
+  if(is.null(x@detectors)) {
+    stop("no detector models found. see '?addBanterDetector'")
+  }
+  invisible(TRUE)
+}
+
 #' Produces a vector of equal sample sizes for balanced Random Forest model.
 #' @name internals
 #' @importFrom stats setNames
@@ -47,48 +69,5 @@
   }, simplify = FALSE) %>% 
     dplyr::bind_rows() %>% 
     tidyr::spread("species", "prob.mean") %>% 
-    replace(is.na(.), 0) 
-}
-
-#' Returns matrix of number of calls by each detector for each event
-#' @rdname internals
-#' @importFrom magrittr %>%
-#' @importFrom plyr .
-#' @importFrom rlang .data :=
-#' @keywords internal
-#' 
-.numCalls <- function(x) {
-  lapply(x@detectors, function(d) {
-    table(event.id = d@ids$event.id) %>% 
-      as.data.frame(stringsAsFactors = FALSE) %>% 
-      dplyr::mutate(detector = d@name)
-  }) %>%
-    dplyr::bind_rows() %>% 
-    tidyr::spread("detector", "Freq") %>% 
-    replace(is.na(.), 0)
-}
-
-#' Returns matrix of number of calls by each detector for each event
-#' @rdname internals
-#' @importFrom magrittr %>%
-#' @importFrom plyr .
-#' @importFrom rlang .data :=
-#' @keywords internal
-#' 
-.propCalls <- function(x) {
-  lapply(names(x), function(d) {
-    table(event.id = x[[d]]) %>% 
-      as.data.frame(stringsAsFactors = FALSE) %>% 
-      dplyr::mutate(detector = d)
-  }) %>%
-    dplyr::bind_rows() %>% 
-    dplyr::group_by(.data$event.id) %>% 
-    dplyr::mutate(
-      prop = .data$Freq / sum(.data$Freq),
-      detector = paste0(.data$detector, ".proportion")
-    ) %>% 
-    dplyr::ungroup() %>% 
-    dplyr::select(-.data$Freq) %>% 
-    tidyr::spread("detector", "prop") %>% 
     replace(is.na(.), 0) 
 }
