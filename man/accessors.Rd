@@ -2,16 +2,16 @@
 % Please edit documentation in R/accessors.R
 \name{accessors}
 \alias{accessors}
-\alias{getModel}
+\alias{getBanterModel}
 \title{BANTER class accessor functions}
 \usage{
-getModel(x, model = "event")
+getBanterModel(x, model = "event")
 }
 \arguments{
-\item{x}{a \code{\link{event_model}} object.}
+\item{x}{a \code{\link{banter_model}} object.}
 
 \item{model}{model to retrieve.}
 }
 \description{
-Accessor functions for slots in BANTER classes
+Accessor functions for components of BANTER models
 }

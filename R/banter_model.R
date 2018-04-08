@@ -1,4 +1,4 @@
-#' @title Event classification model
+#' @title Events classification model
 #' @description Create classification model for events
 #'
 #' @slot data data.frame of event.ids and call.ids for calls in detector
@@ -14,26 +14,25 @@
 #' @importFrom randomForest randomForest
 #' @importFrom rlang .data
 #' 
-#' @exportClass event_model
-#' @export event_model
+#' @keywords internal
 #' 
-event_model <- methods::setClass(
-  "event_model",
+banter_model <- methods::setClass(
+  "banter_model",
   slots = c(
     data = "data.frame",
-    detectors = "list",
+    detectors = "listOrNull",
     model = "classifier"
   )
 )
 
 methods::setValidity(
-  "event_model",
+  "banter_model",
   method = function(object) {
     valid <- NULL
     
     # Check @ids ------------------------
-    if(!all(c("event.id", "call.id") %in% colnames(object@data))) {
-      valid <- c(valid, "slot '@data' must have 'event.id' and 'call.id' columns")
+    if(!all(c("event.id", "species") %in% colnames(object@data))) {
+      valid <- c(valid, "slot '@data' must have 'event.id' and 'species' columns")
     }
     
     # Check @detectors
@@ -49,19 +48,8 @@ methods::setValidity(
 )
 
 methods::setMethod(
-  "initialize", 
-  "event_model",
-  function(.Object, event.data, ...) {
-    .Object@data <- event.data
-    .Object@detectors <- list()
-    .Object@model <- NULL
-    .Object
-  }
-)
-
-methods::setMethod(
   "show",
-  "event_model",
+  "banter_model",
   function(object) {
     df <- object@data %>% 
       dplyr::group_by(.data$species) %>% 

@@ -1,7 +1,7 @@
-#' @title Build Event Model
+#' @title Run BANTER Model
 #' @description Build full event classifier model
 #'
-#' @param x a \code{\link{event_model}} object.
+#' @param x a \code{\link{banter_model}} object.
 #' @param ntree number of trees
 #' @param sampsize number or fraction of samples to use in each tree
 #' 
@@ -13,7 +13,11 @@
 #' @importFrom stats complete.cases setNames
 #' @export
 #' 
-buildEventModel <- function(x, ntree, sampsize = 1) {
+runBanterModel <- function(x, ntree, sampsize = 1) {
+  if(is.null(x@detectors) | length(x@detectors) == 0) {
+    stop("no detector models found. see '?addBanterDetector'")
+  }
+  
   detector.prop <- sapply(x@detectors, function(d) {
     d@ids$event.id
   }, simplify = FALSE) %>% 

@@ -3,25 +3,26 @@
 \name{summary}
 \alias{summary}
 \alias{summary}
-\alias{summary.event_model}
+\alias{summary.banter_model}
 \alias{summary}
-\alias{summary,event_model-method}
-\title{BANTER Random Forest Model Summary}
+\alias{summary,banter_model-method}
+\title{BANTER Classifier Model Summary}
 \usage{
 summary(object, ...)
 
-\method{summary}{event_model}(object, detector = "event", n = 0.1, ...)
+\method{summary}{banter_model}(object, detector = "event", n = 0.1, ...)
 }
 \arguments{
-\item{object}{a \code{\link{event_model}} object.}
+\item{object}{a \code{\link{banter_model}} object.}
 
 \item{...}{ignored.}
 
-\item{detector}{name of detector to summarize.}
+\item{detector}{name of detector to summarize. Default is \code{"event"} 
+to summarize the event-level model.}
 
 \item{n}{number of final iterations to summarize OOB error rate for. If 
 between 0 and 1 is taken as a proportion of chain.}
 }
 \description{
-display summaries for event and detector models
+Display summaries for event and detector models
 }

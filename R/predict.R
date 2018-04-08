@@ -1,16 +1,15 @@
 #' @name predict
-#' @title Predict event data
-#' @description Predict event data
+#' @title Predict BANTER events
+#' @description Predict species of events for novel data from a BANTER model.
 #'
-#' @param object a \code{\link{event_model}} object.
+#' @param object a \code{\link{banter_model}} object.
 #' @param new.data a list of event and detector data.
 #' @param ... unused.
 #'
 #' @author Eric Archer \email{eric.archer@@noaa.gov}
 #' 
-#' @importFrom dplyr n
 #' @importFrom magrittr %>%
-#' @importFrom methods setClass setValidity new setMethod
+#' @importFrom methods setGeneric setMethod
 #' @importFrom plyr .
 #' @importFrom randomForest randomForest
 #' @importFrom rlang .data
@@ -20,16 +19,16 @@ setGeneric("predict")
 
 #' @name predict
 #' @rdname predict
-#' @method predict event_model
+#' @method predict banter_model
 #' @export
-predict.event_model <- function(object, new.data, ...) {
+predict.banter_model <- function(object, new.data, ...) {
   detector.prop <- sapply(names(object@detectors), function(d) {
     new.data$detectors[[d]]$event.id
   }, simplify = FALSE) %>% 
     .propCalls()
   
   detector.votes <- sapply(names(object@detectors), function(d) {
-    randomForest:::predict.randomForest(
+    predict(
       object@detectors[[d]]@model, 
       new.data$detectors[[d]], 
       type = "prob"
@@ -48,14 +47,14 @@ predict.event_model <- function(object, new.data, ...) {
     dplyr::filter(complete.cases(.))
   
   cbind(
-    data.frame(event.id = event.df$event.id),
-    predicted = predict(object@model, event.df, type = "response"),
-    randomForest:::predict.randomForest(object@model, event.df, type = "prob"),
+    data.frame(event.id = event.df$event.id, stringsAsFactors = FALSE),
+    predicted = as.character(predict(object@model, event.df, type = "response")),
+    predict(object@model, event.df, type = "prob"),
     stringsAsFactors = FALSE
   )
 }
 
 #' @name predict
 #' @rdname predict
-#' @aliases predict,event_model-method
-methods::setMethod("predict", "event_model", predict.event_model) 
+#' @aliases predict,banter_model-method
+methods::setMethod("predict", "banter_model", predict.banter_model) 

@@ -3,24 +3,24 @@
 \name{predict}
 \alias{predict}
 \alias{predict}
-\alias{predict.event_model}
+\alias{predict.banter_model}
 \alias{predict}
-\alias{predict,event_model-method}
-\title{Predict event data}
+\alias{predict,banter_model-method}
+\title{Predict BANTER events}
 \usage{
 predict(object, ...)
 
-\method{predict}{event_model}(object, new.data, ...)
+\method{predict}{banter_model}(object, new.data, ...)
 }
 \arguments{
-\item{object}{a \code{\link{event_model}} object.}
+\item{object}{a \code{\link{banter_model}} object.}
 
 \item{...}{unused.}
 
 \item{new.data}{a list of event and detector data.}
 }
 \description{
-Predict event data
+Predict species of events for novel data from a BANTER model.
 }
 \author{
 Eric Archer \email{eric.archer@noaa.gov}

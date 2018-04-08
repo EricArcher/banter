@@ -16,8 +16,10 @@
 #' @importFrom methods setClass setValidity setMethod new
 #' @importFrom randomForest randomForest
 #' 
-detector_model <- methods::setClass(
-  "detector_model",
+#' @keywords internal
+#' 
+banter_detector <- methods::setClass(
+  "banter_detector",
   slots = c(
     name = "character",
     ids = "data.frame",
@@ -26,7 +28,7 @@ detector_model <- methods::setClass(
 )
 
 methods::setValidity(
-  "detector_model",
+  "banter_detector",
   method = function(object) {
     valid <- NULL
     

@@ -25,35 +25,35 @@ test.data <- list(
   })
 )
 
-ntree <- 3000
-sampsize <- 10
+ntree <- 5000
+sampsize <- 100
 
-ev.mdl <- event.df %>% 
+b.mdl <- event.df %>% 
   filter(training) %>% 
   select(event.id, species) %>% 
   mutate(species = gsub(" ", "", species)) %>% 
-  event_model()
+  initBanterModel()
 
-ev.mdl <- addDetectorModel(ev.mdl, detectors$bp, ntree, sampsize) 
-ev.mdl <- addDetectorModel(ev.mdl, detectors$dw, ntree, sampsize) 
-ev.mdl <- addDetectorModel(ev.mdl, detectors$ec, ntree, sampsize) 
-ev.mdl
+b.mdl <- addBanterDetector(b.mdl, detectors$bp, ntree, sampsize) 
+b.mdl <- addBanterDetector(b.mdl, detectors$dw, ntree, sampsize) 
+b.mdl <- addBanterDetector(b.mdl, detectors$ec, ntree, sampsize) 
+b.mdl
 
-ev.mdl <- buildEventModel(ev.mdl, 5000, 3)
-summary(ev.mdl)
+b.mdl <- runBanterModel(b.mdl, 5000, 3)
+summary(b.mdl)
 
-test.pred <- predict(ev.mdl, test.data)
+test.pred <- predict(b.mdl, test.data)
 test.pred
 
 test.data$event %>% 
   select(event.id, species) %>% 
   right_join(test.pred, by = "event.id")
 
-# ev.mdl2 <- addDetectorModel(ev.mdl, detectors, ntree, sampsize)
-# ev.mdl2 <- buildEventModel(ev.mdl2, 50, 3)
-# summary(ev.mdl2)
+# b.mdl2 <- addDetectorModel(b.mdl, detectors, ntree, sampsize)
+# b.mdl2 <- buildEventModel(b.mdl2, 50, 3)
+# summary(b.mdl2)
 # 
-# test.pred2 <- predict(ev.mdl2, test.data)
+# test.pred2 <- predict(b.mdl2, test.data)
 # test.pred2
 
 save.image("data/test ws.rdata")

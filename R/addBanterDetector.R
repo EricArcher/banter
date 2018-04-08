@@ -1,8 +1,8 @@
-#' @name addDetectorModel
-#' @title Add a Detector Model
-#' @description Add a detector model to an event model
+#' @name addBanterDetector
+#' @title Add a BANTER Detector Model
+#' @description Add a detector model to a BANTER classifier.
 #'
-#' @param x a \code{\link{event_model}} object.
+#' @param x a \code{\link{banter_model}} object.
 #' @param name name of detector
 #' @param data detector data.frame
 #' @param ntree number of trees
@@ -14,7 +14,8 @@
 #' @importFrom magrittr %>%
 #' @export
 #' 
-addDetectorModel <- function(x, data, ntree, sampsize = 1) {
+addBanterDetector <- function(x, data, ntree, sampsize = 1) {
+  if(is.null(x@detectors)) x@detectors <- list()
   if(methods::is(data, "list")) {
     d <- lapply(data, function(detector.df) {
       name <- attr(detector.df, "name")
@@ -30,10 +31,10 @@ addDetectorModel <- function(x, data, ntree, sampsize = 1) {
   x
 }
 
-#' @rdname addDetectorModel
+#' @rdname addBanterDetector
 #' @export
 #' 
-removeDetectorModel <- function(x, name) {
+removeBanterDetector <- function(x, name) {
   x@detectors[[name]] <- NULL
   x@model <- NULL
   x
@@ -70,7 +71,7 @@ removeDetectorModel <- function(x, name) {
   )
   
   new(
-    "detector_model",
+    "banter_detector",
     name = name,
     ids = df[, c("event.id", "call.id")], 
     model = rf

@@ -1,9 +1,10 @@
 #' @name summary
-#' @title BANTER Random Forest Model Summary
-#' @description display summaries for event and detector models
+#' @title BANTER Classifier Model Summary
+#' @description Display summaries for event and detector models
 #' 
-#' @param object a \code{\link{event_model}} object.
-#' @param detector name of detector to summarize.
+#' @param object a \code{\link{banter_model}} object.
+#' @param detector name of detector to summarize. Default is \code{"event"} 
+#'   to summarize the event-level model.
 #' @param n number of final iterations to summarize OOB error rate for. If 
 #'   between 0 and 1 is taken as a proportion of chain.
 #' @param ... ignored.
@@ -15,12 +16,12 @@ setGeneric("summary")
 
 #' @name summary
 #' @rdname summary
-#' @method summary event_model
+#' @method summary banter_model
 #' @export 
 #' 
-summary.event_model <- function(object, detector = "event", n = 0.1, ...) {  
+summary.banter_model <- function(object, detector = "event", n = 0.1, ...) {  
   print(object)
-  rf <- getModel(object, detector)
+  rf <- getBanterModel(object, detector)
   if(!is.null(rf)) {  
     cat("\n")
     print(rbind(
@@ -34,8 +35,8 @@ summary.event_model <- function(object, detector = "event", n = 0.1, ...) {
 
 #' @name summary
 #' @rdname summary
-#' @aliases summary,event_model-method
-methods::setMethod("summary", "event_model", summary.event_model) 
+#' @aliases summary,banter_model-method
+methods::setMethod("summary", "banter_model", summary.banter_model) 
 
 
 #' @rdname internals
@@ -57,7 +58,3 @@ methods::setMethod("summary", "event_model", summary.event_model)
     round(summary(1 - (rf$oob.times / rf$ntree)), 3)
   )
 }
-
-
-
-
