@@ -1,20 +1,22 @@
 # banter
 
-## To Do
+### To Do
 
 * Adding additional event-level data (e.g., calling rate for each detector)?
-* What text output needs to be available (data.frames to save)?
 * Parallel processing for detector models
-* Complete function argument checks
-* Summary plots
+* Summary plots  
+    + Training : distribution of correct vs. false assignment probabilities for each species.
+    + Predictions: distribution of predicted assignment probabilities vs. training probabilities
+* What text output needs to be available (data.frames to save)?
+* Function argument checking
 * Unit tests
 * Vignettes
 
-## Description
+### Description
 
 *banter* is a package for creating hierarchical acoustic event classifiers.
 
-## Installation
+### Installation
 
 To install the latest version from GitHub:
 
@@ -25,9 +27,9 @@ if (!require('devtools')) install.packages('devtools')
 devtools::install_github('ericarcher/banter', build_vignettes = TRUE)
 ```
 
-## Tutorial
+### Tutorial
 
-Training a model:
+Training a BANTER model:
 ```r
 data(train.data)
 ex.mdl <- initBanterModel(train.data$events) %>% 
@@ -36,21 +38,21 @@ ex.mdl <- initBanterModel(train.data$events) %>%
 summary(ex.mdl)
 ```
 
-Predicting new data with a model:
+Predicting new data with an existing BANTER model:
 ```r
 data(test.data)
 predict(ex.mdl, test.data)
 ```
 
-## Contact
+### Contact
 
 * submit suggestions and bug-reports: <https://github.com/ericarcher/banter/issues>
-* send a pull request: <https://github.com/ericarcher/sprex/>
+* send a pull request: <https://github.com/ericarcher/banter/>
 * e-mail: <eric.archer@noaa.gov>
 
-## Reference
+### Reference
 Rankin, S., Archer, F., Keating, J. L., Oswald, J. N., Oswald, M., Curtis, A. and Barlow, J. (2017) Acoustic classification of dolphins in the California Current using whistles, echolocation clicks, and burst pulses. Mar Mam Sci, 33: 520-540. [doi:10.1111/mms.12381](https://onlinelibrary.wiley.com/doi/abs/10.1111/mms.12381)
 
-## version 0.0.1 (current on GitHub)
+### version 0.0.1 (current on GitHub)
 
 * Initial release
