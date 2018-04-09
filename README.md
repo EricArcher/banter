@@ -22,7 +22,7 @@ To install the latest version from GitHub:
 
 ```r
 # make sure you have Rtools installed
-if (!require('devtools')) install.packages('devtools')
+if(!require('devtools')) install.packages('devtools')
 # install from GitHub
 devtools::install_github('ericarcher/banter', build_vignettes = TRUE)
 ```

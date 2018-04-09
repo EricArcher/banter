@@ -3,10 +3,11 @@
 #' @description Add a detector model to a BANTER classifier.
 #'
 #' @param x a \code{\link{banter_model}} object.
-#' @param name name of detector
-#' @param data detector data.frame
-#' @param ntree number of trees
-#' @param sampsize number or fraction of samples to use in each tree
+#' @param name name of detector.
+#' @param data detector data.frame.
+#' @param ntree number of trees.
+#' @param sampsize number or fraction of samples to use in each tree.
+#' @param num.cores number of cores to use for Random Forest model.
 #' 
 #' @author Eric Archer \email{eric.archer@@noaa.gov}
 #' 
@@ -14,18 +15,18 @@
 #' @importFrom magrittr %>%
 #' @export
 #' 
-addBanterDetector <- function(x, data, ntree, sampsize = 1) {
+addBanterDetector <- function(x, data, ntree, sampsize = 1, num.cores = NULL) {
   if(is.null(x@detectors)) x@detectors <- list()
   if(methods::is(data, "list")) {
     d <- lapply(data, function(detector.df) {
       name <- attr(detector.df, "name")
-      .runDetectorModel(x, name, detector.df, ntree, sampsize)
+      .runDetectorModel(x, name, detector.df, ntree, sampsize, num.cores)
     })
     d <- setNames(d, sapply(data, attr, which = "name"))
     x@detectors[names(d)] <- d
   } else {
     name <- attr(data, "name")
-    x@detectors[[name]] <- .runDetectorModel(x, name, data, ntree, sampsize)
+    x@detectors[[name]] <- .runDetectorModel(x, name, data, ntree, sampsize, num.cores)
   }
   x@detectors <- x@detectors[order(names(x@detectors))]
   x@model <- NULL
@@ -42,7 +43,12 @@ removeBanterDetector <- function(x, name) {
   x
 }
 
-.runDetectorModel <- function(x, name, data, ntree, sampsize = 1) {
+#' @importFrom parallel detectCores makeCluster clusterExport clusterCall parLapply stopCluster mclapply
+#' @importFrom randomForest randomForest combine
+#' @importFrom utils sessionInfo
+#' @keywords internal
+#' 
+.runDetectorModel <- function(x, name, data, ntree, sampsize = 1, num.cores) {
   df <- x@data %>% 
     dplyr::select(.data$event.id, .data$species) %>% 
     dplyr::inner_join(data, by = "event.id") %>% 
@@ -50,27 +56,69 @@ removeBanterDetector <- function(x, name) {
     as.data.frame
   
   sampsize <- .getSampsize(
-    df$species, 
-    sampsize, 
+    df$species,
+    sampsize,
     paste0("Detector model (", name, ")")
   )
-  
-  df <- df %>% 
-    dplyr::filter(.data$species %in% names(sampsize)) %>% 
-    dplyr::mutate(species = factor(.data$species)) %>% 
-    dplyr::mutate(id = paste0(.data$event.id, ".", .data$call.id)) %>% 
-    tibble::column_to_rownames("id") %>% 
-    as.data.frame() %>% 
+
+  df <- df %>%
+    dplyr::filter(.data$species %in% names(sampsize)) %>%
+    dplyr::mutate(species = factor(.data$species)) %>%
+    dplyr::mutate(id = paste0(.data$event.id, ".", .data$call.id)) %>%
+    tibble::column_to_rownames("id") %>%
+    as.data.frame() %>%
     droplevels()
+
+  predictors <- dplyr::select(df, -.data$event.id, -.data$call.id, -.data$species)
+  response <- df$species
   
-  rf <- randomForest::randomForest(
-    species ~ ., 
-    data = dplyr::select(df, -.data$event.id, -.data$call.id),
-    ntree = ntree, 
-    sampsize = sampsize, 
-    replace = FALSE,
-    importance = TRUE
-  )
+  if(is.null(num.cores)) num.cores <- parallel::detectCores() - 1
+  
+  rf <- if(num.cores == 1) {
+    randomForest::randomForest(
+      x = predictors, y = response, ntree = ntree, sampsize = sampsize, 
+      replace = FALSE, importance = FALSE, proximity = FALSE
+    )
+  } else {
+    rfFunc <- function(i, predictors, response, cl.ntree, sampsize) {
+      randomForest::randomForest(
+        x = predictors, y = response, ntree = cl.ntree, sampsize = sampsize, 
+        replace = FALSE, importance = FALSE, proximity = FALSE
+      )
+    } 
+    cl.ntree <- ceiling(ntree / num.cores)
+    rf.list <- parallel::mclapply(1:num.cores, rfFunc, 
+                       predictors = predictors, response = response, 
+                       cl.ntree = cl.ntree, sampsize = sampsize, mc.cores = num.cores
+    )
+    #rf.list <- tryCatch({
+      # Create clusters
+      # 
+      # cl <- parallel::makeCluster(num.cores)
+      # env <- environment()
+      # 
+      # # Export and load the loaded packages to the clusters
+      # # loaded.packages <- c(
+      # #   utils::sessionInfo()$basePkgs, 
+      # #   names(utils::sessionInfo()$otherPkgs)
+      # # )
+      # #parallel::clusterExport(cl = cl, varlist = "loaded.packages", envir = env)
+      # parallel::clusterCall(cl, function(i) require(randomForest))
+      # #   lapply(loaded.packages, require, character.only = TRUE)
+      # # })
+      # parallel::clusterExport(
+      #   cl, c("predictors", "response", "cl.ntree"), envir = env
+      # )
+      # 
+      # # Run the model on the clusters
+      # parallel::parLapply(
+      #   cl = cl, X = 1:num.cores, fun = rfFunc, 
+      #   predictors = predictors, response = response, 
+      #   cl.ntree = cl.ntree, sampsize = sampsize
+      # )
+    # }, finally = parallel::stopCluster(cl))
+    do.call(randomForest::combine, rf.list)
+  }
   
   new(
     "banter_detector",

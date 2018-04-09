@@ -32,7 +32,7 @@ predict.banter_model <- function(object, new.data, ...) {
   }) %>%
     dplyr::bind_rows() %>% 
     dplyr::group_by(.data$event.id) %>% 
-    dplyr::mutate(n = sum(n, na.rm = TRUE)) %>% 
+    dplyr::mutate(n = n / sum(n, na.rm = TRUE)) %>% 
     dplyr::ungroup() %>% 
     tidyr::spread("detector", "n") %>% 
     replace(is.na(.), 0) %>% 

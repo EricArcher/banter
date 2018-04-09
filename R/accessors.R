@@ -1,4 +1,3 @@
-
 #' @name accessors
 #' @title BANTER class accessor functions
 #' @description Accessor functions for components of BANTER models
@@ -15,6 +14,14 @@ getBanterModel <- function(x, model = "event") {
   x@detectors[[model]]@model
 }
 
+#' @rdname accessors
+#' @export
+#' 
+getModelError <- function(x, model = "event") {
+  rf <- getBanterModel(x, model) 
+  mean(rf$y != rf$predicted)
+}
+  
 #' @rdname accessors
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data

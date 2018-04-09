@@ -3,12 +3,15 @@
 \name{accessors}
 \alias{accessors}
 \alias{getBanterModel}
+\alias{getModelError}
 \alias{numEvents}
 \alias{numCalls}
 \alias{propCalls}
 \title{BANTER class accessor functions}
 \usage{
 getBanterModel(x, model = "event")
+
+getModelError(x, model = "event")
 
 numEvents(x, model = "event")
 

@@ -12,6 +12,7 @@ Depends:
 Imports:
   dplyr,
   methods,
+  parallel,
   randomForest,
   ranger,
   rfPermute,

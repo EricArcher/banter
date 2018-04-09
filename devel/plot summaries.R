@@ -1,65 +1,30 @@
 library(tidyverse)
 library(gridExtra)
+library(rfPermute)
+library(banter)
 
-plotRFtrace <- function(rf, plot = TRUE) {
-  df <- rf$err.rate %>% 
-    as.data.frame()
-  lvls <- colnames(df)
-  p <- df %>% 
-    mutate(trees = 1:nrow(.)) %>% 
-    gather(class, error, -trees) %>% 
-    mutate(class = factor(class, levels = lvls)) %>% 
-    ggplot(aes(trees, error, color = class)) +
-    geom_line() +
-    scale_color_discrete("")
-  
-  if(plot) print(p)
-  invisible(p)
-}
+load("data/test ws.rdata")
 
-rfConfMat <- function(rf) {
-  x <- table(rf$y, rf$predicted)
-  cbind(x, class.error = 1 - (diag(x) / rowSums(x)))
-}
 
-plotConfMat <- function(rf, title = NULL, plot = TRUE) {
-  library(tidyverse)
-  library(viridis)
-  conf.mat <- rfConfMat(rf)
-  conf <- conf.mat[, -ncol(conf.mat)] 
-  pct.correct <- (100 * sum(diag(conf)) / sum(conf)) %>% 
-    round(0) %>% 
-    paste0("% correct")
-  title <- if(is.null(title)) pct.correct else paste0(title, " (", pct.correct, ")")
-  freq <- rowSums(conf)
-  rownames(conf) <- paste0(names(freq), " (", freq, ")")
-  
-  conf <- conf %>% 
-    prop.table(1) %>% 
+predictedProbDist <- function(rf) {
+  p <- rf$votes %>% 
     as.data.frame %>% 
-    rownames_to_column("observed") %>% 
-    gather(predicted, prop, -observed) %>% 
-    mutate(
-      #prop = ifelse(prop == 0, NA, prop),
-      observed = factor(observed),
-      observed = reorder(observed, desc(observed)),
-      predicted = factor(predicted)
-    )
-  
-  p <- ggplot(conf, aes(predicted, observed)) +
-    geom_raster(aes(fill = prop)) +
-    scale_fill_viridis(option = "magma", direction = -1, limits = c(0, 1)) +
-    scale_x_discrete(position = "top") +
-    labs(x = "Predicted", y = "True", title = title) +
-    guides(fill = guide_colorbar(title = "Proportion")) +
-    theme(
-      axis.text.x.top = element_text(angle = 45, hjust = 0),
-      panel.background = element_blank()
-    )
-  
-  if(plot) print(p)
-  invisible(p)
+    cbind(
+      species = as.character(rf$y),
+      predicted = as.character(rf$predicted)
+    ) %>% 
+    gather(prob.spp, prob, -species, -predicted) %>% 
+    filter(predicted == prob.spp) %>% 
+    mutate(correct = species == predicted) %>% 
+    ggplot(aes(prob)) +
+    geom_histogram(aes(fill = species), bins = 20) +
+    facet_wrap(~ predicted) +
+    ggtitle("Predictions")
+  print(p)
 }
+predictedProbDist(getBanterModel(mdl))
+
+
 
 rfSummary <- function(rf) {
   rf.trace <- plotRFtrace(rf, plot = FALSE)

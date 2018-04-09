@@ -58,18 +58,13 @@ methods::setMethod(
     df <- numEvents(object)
     
     err.rate <- NULL
-    if(!is.null(object@detectors)) {    
-      df <- df %>% 
-        dplyr::left_join(numCalls(object), by = "species") %>% 
-        as.data.frame()
-      
-      err.rate <- sapply(object@detectors, function(x) {
-        oob <- x@model$err.rate[, "OOB"]
-        oob[length(oob)]
-      })
+    if(!is.null(object@detectors)) {  
+      err.rate <- sapply(
+        names(object@detectors), 
+        function(d) getModelError(object, d)
+      )
       if(!is.null(object@model)) {
-        oob <- object@model$err.rate[, "OOB"]
-        err.rate <- c(event = oob[length(oob)], err.rate)
+        err.rate <- c(event = getModelError(object), err.rate)
       }
     }
     

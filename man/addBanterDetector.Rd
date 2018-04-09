@@ -5,20 +5,22 @@
 \alias{removeBanterDetector}
 \title{Add a BANTER Detector Model}
 \usage{
-addBanterDetector(x, data, ntree, sampsize = 1)
+addBanterDetector(x, data, ntree, sampsize = 1, num.cores = NULL)
 
 removeBanterDetector(x, name)
 }
 \arguments{
 \item{x}{a \code{\link{banter_model}} object.}
 
-\item{data}{detector data.frame}
+\item{data}{detector data.frame.}
 
-\item{ntree}{number of trees}
+\item{ntree}{number of trees.}
 
-\item{sampsize}{number or fraction of samples to use in each tree}
+\item{sampsize}{number or fraction of samples to use in each tree.}
 
-\item{name}{name of detector}
+\item{num.cores}{number of cores to use for Random Forest model.}
+
+\item{name}{name of detector.}
 }
 \description{
 Add a detector model to a BANTER classifier.
