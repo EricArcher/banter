@@ -7,10 +7,23 @@
 initBanterModel(x)
 }
 \arguments{
-\item{x}{a data.frame}
+\item{x}{a data.frame of events. Every row is a unique event. Must have 
+columns named \code{event.id} and \code{species}. All other 
+columns will be used as predictor variables for the BANTER event classifier 
+model.}
+}
+\value{
+a \code{\link{banter_model}} object without any detector models.
 }
 \description{
-Initialize a BANTER model with a data.frame of events.
+Initialize a BANTER model with event data.
+}
+\examples{
+data(train.data)
+# initialize BANTER model with event data
+bant.mdl <- initBanterModel(train.data$events)
+bant.mdl
+
 }
 \author{
 Eric Archer \email{eric.archer@noaa.gov}

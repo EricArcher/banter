@@ -71,3 +71,21 @@
     tidyr::spread("species", "prob.mean") %>% 
     replace(is.na(.), 0) 
 }
+
+#' Detector randomForest function
+#' @rdname internals
+#' @importFrom randomForest randomForest
+#' @keywords internal
+#' 
+.rfFuncDetector <- function(params) {
+  randomForest::randomForest(
+    x = params$predictors, 
+    y = params$response, 
+    ntree = params$ntree, 
+    sampsize = params$sampsize, 
+    replace = FALSE, 
+    importance = FALSE, 
+    proximity = FALSE, 
+    norm.votes = FALSE
+  )
+}

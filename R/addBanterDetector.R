@@ -9,7 +9,25 @@
 #' @param sampsize number or fraction of samples to use in each tree.
 #' @param num.cores number of cores to use for Random Forest model.
 #' 
+#' @return a \code{\link{banter_model}} object with the detector model added or 
+#'   removed.
+#' 
 #' @author Eric Archer \email{eric.archer@@noaa.gov}
+#' 
+#' @examples
+#' data(train.data)
+#' # initialize BANTER model with event data
+#' bant.mdl <- initBanterModel(train.data$events)
+#' # add the 'bp' (burst pulse) detector model
+#' bant.mdl <- addBanterDetector(
+#'   bant.mdl, train.data$detectors$bp, 
+#'   ntree = 50, sampsize = 1, num.cores = 1
+#' )
+#' bant.mdl
+#' 
+#' # remove the 'bp' detector model
+#' bant.mdl <- removeBanterDetector(bant.mdl, "bp")
+#' bant.mdl
 #' 
 #' @importFrom rlang .data
 #' @importFrom magrittr %>%
@@ -43,12 +61,12 @@ removeBanterDetector <- function(x, name) {
   x
 }
 
-#' @importFrom parallel detectCores makeCluster clusterExport clusterCall parLapply stopCluster mclapply
+#' @importFrom parallel detectCores makeCluster clusterExport clusterEvalQ parLapply stopCluster mclapply
 #' @importFrom randomForest randomForest combine
 #' @importFrom utils sessionInfo
 #' @keywords internal
 #' 
-.runDetectorModel <- function(x, name, data, ntree, sampsize = 1, num.cores) {
+.runDetectorModel <- function(x, name, data, ntree, sampsize = 1, num.cores = NULL) {
   df <- x@data %>% 
     dplyr::select(.data$event.id, .data$species) %>% 
     dplyr::inner_join(data, by = "event.id") %>% 
@@ -69,54 +87,33 @@ removeBanterDetector <- function(x, name) {
     as.data.frame() %>%
     droplevels()
 
-  predictors <- dplyr::select(df, -.data$event.id, -.data$call.id, -.data$species)
-  response <- df$species
+  params <- list(
+    predictors = df %>% 
+      dplyr::select(-.data$event.id, -.data$call.id, -.data$species),
+    response = df$species,
+    sampsize = sampsize
+  )
   
   if(is.null(num.cores)) num.cores <- parallel::detectCores() - 1
-  
   rf <- if(num.cores == 1) {
-    randomForest::randomForest(
-      x = predictors, y = response, ntree = ntree, sampsize = sampsize, 
-      replace = FALSE, importance = FALSE, proximity = FALSE
-    )
+    params$ntree <- ntree
+    .rfFuncDetector(params) 
   } else {
-    rfFunc <- function(i, predictors, response, cl.ntree, sampsize) {
-      randomForest::randomForest(
-        x = predictors, y = response, ntree = cl.ntree, sampsize = sampsize, 
-        replace = FALSE, importance = FALSE, proximity = FALSE
+    .clRF <- function(i, params) .rfFuncDetector(params)
+    params$ntree <- ceiling(ntree / num.cores)
+    
+    rf.list <- if(Sys.info()[["sysname"]] %in% c("Linux", "Darwin")) {
+      parallel::mclapply(
+        1:num.cores, .clRF, params = params, mc.cores = num.cores
       )
-    } 
-    cl.ntree <- ceiling(ntree / num.cores)
-    rf.list <- parallel::mclapply(1:num.cores, rfFunc, 
-                       predictors = predictors, response = response, 
-                       cl.ntree = cl.ntree, sampsize = sampsize, mc.cores = num.cores
-    )
-    #rf.list <- tryCatch({
-      # Create clusters
-      # 
-      # cl <- parallel::makeCluster(num.cores)
-      # env <- environment()
-      # 
-      # # Export and load the loaded packages to the clusters
-      # # loaded.packages <- c(
-      # #   utils::sessionInfo()$basePkgs, 
-      # #   names(utils::sessionInfo()$otherPkgs)
-      # # )
-      # #parallel::clusterExport(cl = cl, varlist = "loaded.packages", envir = env)
-      # parallel::clusterCall(cl, function(i) require(randomForest))
-      # #   lapply(loaded.packages, require, character.only = TRUE)
-      # # })
-      # parallel::clusterExport(
-      #   cl, c("predictors", "response", "cl.ntree"), envir = env
-      # )
-      # 
-      # # Run the model on the clusters
-      # parallel::parLapply(
-      #   cl = cl, X = 1:num.cores, fun = rfFunc, 
-      #   predictors = predictors, response = response, 
-      #   cl.ntree = cl.ntree, sampsize = sampsize
-      # )
-    # }, finally = parallel::stopCluster(cl))
+    } else {
+      tryCatch({
+        cl <- parallel::makeCluster(num.cores)
+        parallel::clusterEvalQ(cl, require(randomForest))
+        parallel::clusterExport(cl, "params", environment())
+        parallel::parLapply(cl, 1:num.cores, .clRF, params = params)
+      }, finally = parallel::stopCluster(cl))
+    }
     do.call(randomForest::combine, rf.list)
   }
   

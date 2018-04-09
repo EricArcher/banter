@@ -5,7 +5,10 @@
 #' @param object a \code{\link{banter_model}} object.
 #' @param new.data a list of event and detector data.
 #' @param ... unused.
-#'
+#' 
+#' @return A data.frame with the predicted species (\code{"predicted"}) followed 
+#'   by columns of assignment probabilities.
+#'   
 #' @author Eric Archer \email{eric.archer@@noaa.gov}
 #' 
 #' @importFrom magrittr %>%

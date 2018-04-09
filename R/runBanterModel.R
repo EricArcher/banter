@@ -2,10 +2,25 @@
 #' @description Build full event classifier model
 #'
 #' @param x a \code{\link{banter_model}} object.
-#' @param ntree number of trees
-#' @param sampsize number or fraction of samples to use in each tree
+#' @param ntree number of trees.
+#' @param sampsize number or fraction of samples to use in each tree.
+#' 
+#' @return a \code{\link{banter_model}} object with the complete BANTER model.
 #' 
 #' @author Eric Archer \email{eric.archer@@noaa.gov}
+#' 
+#' @examples
+#' data(train.data)
+#' # initialize BANTER model with event data
+#' bant.mdl <- initBanterModel(train.data$events)
+#' # add all detector models
+#' bant.mdl <- addBanterDetector(
+#'   bant.mdl, train.data$detectors, 
+#'   ntree = 50, sampsize = 1, num.cores = 1
+#' )
+#' # run BANTER event model
+#' bant.mdl <- runBanterModel(bant.mdl, ntree = 1000, sampsize = 1)
+#' summary(bant.mdl)
 #' 
 #' @importFrom magrittr %>%
 #' @importFrom plyr .
@@ -19,11 +34,10 @@ runBanterModel <- function(x, ntree, sampsize = 1) {
   detector.prop <- propCalls(x, "event")
   
   detector.votes <- sapply(x@detectors, function(d) {
-    cbind(
-      event.id = d@ids$event.id, 
-      as.data.frame(d@model$votes),
-      stringsAsFactors = FALSE
-    )
+    votes <- d@model$votes %>% 
+      prop.table(1) %>% 
+      as.data.frame() 
+    cbind(event.id = d@ids$event.id, votes, stringsAsFactors = FALSE)
   }, simplify = FALSE) %>% 
     .meanVotes()
   

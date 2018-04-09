@@ -19,6 +19,10 @@ predict(object, ...)
 
 \item{new.data}{a list of event and detector data.}
 }
+\value{
+A data.frame with the predicted species (\code{"predicted"}) followed 
+  by columns of assignment probabilities.
+}
 \description{
 Predict species of events for novel data from a BANTER model.
 }

@@ -6,6 +6,7 @@
 \alias{internals}
 \alias{.getSampsize}
 \alias{.meanVotes}
+\alias{.rfFuncDetector}
 \alias{.rfErrorSmry}
 \alias{.inBagSmry}
 \title{Checks to make sure 'model' is a valid model name}
@@ -18,6 +19,8 @@
 
 .meanVotes(x)
 
+.rfFuncDetector(params)
+
 .rfErrorSmry(rf, n = 0.1)
 
 .inBagSmry(rf)
@@ -28,5 +31,7 @@ Checks to make sure 'model' is a valid model name
 Produces a vector of equal sample sizes for balanced Random Forest model.
 
 Returns matrix of mean species vote percentage by event
+
+Detector randomForest function
 }
 \keyword{internal}

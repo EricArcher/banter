@@ -9,12 +9,29 @@ runBanterModel(x, ntree, sampsize = 1)
 \arguments{
 \item{x}{a \code{\link{banter_model}} object.}
 
-\item{ntree}{number of trees}
+\item{ntree}{number of trees.}
 
-\item{sampsize}{number or fraction of samples to use in each tree}
+\item{sampsize}{number or fraction of samples to use in each tree.}
+}
+\value{
+a \code{\link{banter_model}} object with the complete BANTER model.
 }
 \description{
 Build full event classifier model
+}
+\examples{
+data(train.data)
+# initialize BANTER model with event data
+bant.mdl <- initBanterModel(train.data$events)
+# add all detector models
+bant.mdl <- addBanterDetector(
+  bant.mdl, train.data$detectors, 
+  ntree = 50, sampsize = 1, num.cores = 1
+)
+# run BANTER event model
+bant.mdl <- runBanterModel(bant.mdl, ntree = 1000, sampsize = 1)
+summary(bant.mdl)
+
 }
 \author{
 Eric Archer \email{eric.archer@noaa.gov}

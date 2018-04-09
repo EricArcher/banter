@@ -22,8 +22,28 @@ removeBanterDetector(x, name)
 
 \item{name}{name of detector.}
 }
+\value{
+a \code{\link{banter_model}} object with the detector model added or 
+  removed.
+}
 \description{
 Add a detector model to a BANTER classifier.
+}
+\examples{
+data(train.data)
+# initialize BANTER model with event data
+bant.mdl <- initBanterModel(train.data$events)
+# add the 'bp' (burst pulse) detector model
+bant.mdl <- addBanterDetector(
+  bant.mdl, train.data$detectors$bp, 
+  ntree = 50, sampsize = 1, num.cores = 1
+)
+bant.mdl
+
+# remove the 'bp' detector model
+bant.mdl <- removeBanterDetector(bant.mdl, "bp")
+bant.mdl
+
 }
 \author{
 Eric Archer \email{eric.archer@noaa.gov}

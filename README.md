@@ -3,12 +3,12 @@
 ### To Do
 
 * Adding additional event-level data (e.g., calling rate for each detector)?
-* Parallel processing for detector models
 * Summary plots  
     + Training : distribution of correct vs. false assignment probabilities for each species.
     + Predictions: distribution of predicted assignment probabilities vs. training probabilities
 * What text output needs to be available (data.frames to save)?
 * Function argument checking
+* Completing help files
 * Unit tests
 * Vignettes
 
