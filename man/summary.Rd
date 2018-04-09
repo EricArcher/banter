@@ -10,15 +10,15 @@
 \usage{
 summary(object, ...)
 
-\method{summary}{banter_model}(object, detector = "event", n = 0.1, ...)
+\method{summary}{banter_model}(object, model = "event", n = 0.1, ...)
 }
 \arguments{
 \item{object}{a \code{\link{banter_model}} object.}
 
 \item{...}{ignored.}
 
-\item{detector}{name of detector to summarize. Default is \code{"event"} 
-to summarize the event-level model.}
+\item{model}{name of model to summarize. Default is \code{"event"} 
+to summarize the event-level model. Can also be name of a detector.}
 
 \item{n}{number of final iterations to summarize OOB error rate for. If 
 between 0 and 1 is taken as a proportion of chain.}

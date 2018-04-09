@@ -10,6 +10,8 @@ NULL
 setOldClass(c("randomForest", "randomForest.formula", "rfPermute", "ranger"))
 setClassUnion("classifier", c("randomForest", "randomForest.formula", "rfPermute", "ranger", "NULL"))
 setClassUnion("listOrNull", c("list", "NULL"))
+setClassUnion("dfOrNull", c("data.frame", "NULL"))
+setClassUnion("dateOrNull", c("POSIXct", "NULL"))
 
 #' @docType data
 #' @name train.data

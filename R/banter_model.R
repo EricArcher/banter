@@ -3,16 +3,13 @@
 #'
 #' @slot data data.frame of event.ids and call.ids for calls in detector
 #' @slot detectors list of \code{detector_model} objects
+#' @slot model.data data used to create classification model
 #' @slot model classification model
 #'
 #' @author Eric Archer \email{eric.archer@@noaa.gov}
 #' 
-#' @importFrom dplyr n
 #' @importFrom magrittr %>%
-#' @importFrom methods setClass setValidity new setMethod
-#' @importFrom plyr .
-#' @importFrom randomForest randomForest
-#' @importFrom rlang .data
+#' @importFrom methods setClass setValidity setMethod
 #' 
 #' @keywords internal
 #' 
@@ -21,7 +18,9 @@ banter_model <- methods::setClass(
   slots = c(
     data = "data.frame",
     detectors = "listOrNull",
-    model = "classifier"
+    model.data = "dfOrNull",
+    model = "classifier",
+    timestamp = "dateOrNull"
   )
 )
 
@@ -55,23 +54,21 @@ methods::setMethod(
   "show",
   "banter_model",
   function(object) {
-    df <- numEvents(object)
+    df <- numEvents(object) 
+    df <- rbind(
+      df, 
+      data.frame(species = "Overall", num.events = sum(df$num.events))
+    )
     
-    err.rate <- NULL
-    if(!is.null(object@detectors)) {  
-      err.rate <- sapply(
-        names(object@detectors), 
-        function(d) getModelError(object, d)
-      )
-      if(!is.null(object@model)) {
-        err.rate <- c(event = getModelError(object), err.rate)
-      }
+    pct.correct <- modelPctCorrect(object)
+    if(!is.null(pct.correct)) {
+      df <- dplyr::left_join(df, pct.correct, by = "species")
     }
     
+    if(!is.null(object@timestamp)) {
+      cat("Event model run at", format(object@timestamp))
+    }
+    cat("\nNumber of events and model correct classification rate:\n")
     print(df)
-    if(!is.null(err.rate)) {
-      cat("\nModel error rates:\n")
-      print(round(err.rate, 3))
-    }
   }
 )

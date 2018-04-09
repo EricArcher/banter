@@ -2,10 +2,8 @@
 
 ### To Do
 
-* Adding additional event-level data (e.g., calling rate for each detector)?
-* Summary plots  
-    + Training : distribution of correct vs. false assignment probabilities for each species.
-    + Predictions: distribution of predicted assignment probabilities vs. training probabilities
+* Include expected mean inbag in model diagnostic summary
+
 * What text output needs to be available (data.frames to save)?
 * Function argument checking
 * Completing help files

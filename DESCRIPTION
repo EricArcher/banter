@@ -7,12 +7,12 @@ Authors@R: c(
   EA = person("Eric", "Archer", email = "eric.archer@noaa.gov", role = c("aut", "cre")),
   TS = person("Taiki", "Sakai", email = "taiki.sakai@noaa.gov", role = c("aut")))
 Depends:
-  magrittr,
-  plyr
+  magrittr
 Imports:
   dplyr,
   methods,
   parallel,
+  plyr,
   randomForest,
   ranger,
   rfPermute,

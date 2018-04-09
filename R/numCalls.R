@@ -1,51 +1,15 @@
-#' @name accessors
-#' @title BANTER class accessor functions
-#' @description Accessor functions for components of BANTER models
+#' @name numCalls
+#' @title Number and Proportion of Calls
+#' @description Number and proportion of calls in BANTER detector models
 #' 
 #' @param x a \code{\link{banter_model}} object.
-#' @param model model to retrieve.
 #' @param by return summary by \code{"species"} or \code{"event"}.
 #' 
-#' @export
-#' 
-getBanterModel <- function(x, model = "event") {
-  if(model == "event") return(x@model)
-  .checkModelName(x, model)
-  x@detectors[[model]]@model
-}
-
-#' @rdname accessors
-#' @export
-#' 
-getModelError <- function(x, model = "event") {
-  rf <- getBanterModel(x, model) 
-  mean(rf$y != rf$predicted)
-}
-  
-#' @rdname accessors
-#' @importFrom magrittr %>%
-#' @importFrom rlang .data
-#' @export
-#' 
-numEvents <- function(x, model = "event") {
-  .checkModelName(x, model)
-  df <- if(model == "event") {
-    x@data 
-  } else {
-    x@data %>% 
-      dplyr::filter(.data$event.id %in% x@detectors[[model]]@ids$event.id)
-  }
-  spp.fac <- factor(df$species, levels = sort(unique(x@data$species)))
-  table(species = spp.fac) %>% 
-    as.data.frame() %>% 
-    setNames(c("species", "events")) %>% 
-    dplyr::mutate(species = as.character(.data$species)) 
-}
-
-#' @rdname accessors
+#' @importFrom dplyr n
 #' @importFrom magrittr %>%
 #' @importFrom plyr .
 #' @importFrom rlang .data
+#' 
 #' @export
 #' 
 numCalls <- function(x, by = c("species", "event")) {
@@ -65,9 +29,7 @@ numCalls <- function(x, by = c("species", "event")) {
     as.data.frame()
 }
 
-#' @rdname accessors
-#' @importFrom magrittr %>%
-#' @importFrom rlang .data
+#' @rdname numCalls
 #' @export
 #' 
 propCalls <- function(x, by = c("species", "event")) {

@@ -18,6 +18,11 @@ a \code{\link{banter_model}} object without any detector models.
 \description{
 Initialize a BANTER model with event data.
 }
+\note{
+Values in the column \code{species} are passed through the
+  \code{\link{make.names}} function on creation to ensure they 
+  don't include invalid characters.
+}
 \examples{
 data(train.data)
 # initialize BANTER model with event data

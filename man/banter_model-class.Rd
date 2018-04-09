@@ -15,6 +15,8 @@ Create classification model for events
 
 \item{\code{detectors}}{list of \code{detector_model} objects}
 
+\item{\code{model.data}}{data used to create classification model}
+
 \item{\code{model}}{classification model}
 }}
 

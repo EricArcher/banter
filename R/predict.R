@@ -11,6 +11,7 @@
 #'   
 #' @author Eric Archer \email{eric.archer@@noaa.gov}
 #' 
+#' @importFrom dplyr n
 #' @importFrom magrittr %>%
 #' @importFrom methods setGeneric setMethod
 #' @importFrom plyr .
@@ -25,7 +26,7 @@ setGeneric("predict")
 #' @method predict banter_model
 #' @export
 predict.banter_model <- function(object, new.data, ...) {
-  detector.prop <- lapply(names(new.data$detectors), function(d) {
+  detector.num <- lapply(names(new.data$detectors), function(d) {
     new.data$events %>% 
       dplyr::left_join(new.data$detectors[[d]], by = "event.id") %>% 
       dplyr::group_by(.data$event.id) %>% 
@@ -33,7 +34,9 @@ predict.banter_model <- function(object, new.data, ...) {
       dplyr::ungroup() %>% 
       dplyr::mutate(detector = paste0("prop.", d))
   }) %>%
-    dplyr::bind_rows() %>% 
+    dplyr::bind_rows()
+  
+  detector.prop <- detector.num %>% 
     dplyr::group_by(.data$event.id) %>% 
     dplyr::mutate(n = n / sum(n, na.rm = TRUE)) %>% 
     dplyr::ungroup() %>% 
@@ -55,16 +58,41 @@ predict.banter_model <- function(object, new.data, ...) {
   }, simplify = FALSE) %>% 
     .meanVotes()
   
-  event.df <- new.data$events %>% 
+  df <- new.data$events %>% 
     dplyr::left_join(detector.prop, by = "event.id") %>% 
-    dplyr::left_join(detector.votes, by = "event.id") %>% 
+    dplyr::left_join(detector.votes, by = "event.id")
+    
+    if("duration" %in% colnames(df)) {
+      if(all(!is.na(df$duration))) {
+        df <- df %>% 
+          dplyr::left_join(
+            detector.num %>%  
+              dplyr::left_join(
+                dplyr::select(df, "event.id", "duration"), 
+                by = "event.id"
+              ) %>% 
+              dplyr::mutate(
+                detector = gsub("prop.", "rate.", .data$detector),
+                n = .data$n / .data$duration
+              ) %>% 
+              dplyr::select(-.data$duration) %>% 
+              tidyr::spread("detector", "n"),
+            by = "event.id"
+          )
+      }
+    }
+  
+  df <- df %>% 
     dplyr::filter(complete.cases(.))
   
-  cbind(
-    data.frame(event.id = event.df$event.id, stringsAsFactors = FALSE),
-    predicted = as.character(predict(object@model, event.df, type = "response")),
-    predict(object@model, event.df, type = "prob"),
-    stringsAsFactors = FALSE
+  list(
+    events = df,
+    predict.df = cbind(
+      data.frame(event.id = df$event.id, stringsAsFactors = FALSE),
+      predicted = as.character(predict(object@model, df, type = "response")),
+      predict(object@model, df, type = "prob"),
+      stringsAsFactors = FALSE
+    )
   )
 }
 

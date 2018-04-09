@@ -41,15 +41,49 @@ runBanterModel <- function(x, ntree, sampsize = 1) {
   }, simplify = FALSE) %>% 
     .meanVotes()
   
-  df <- x@data %>% 
+  df <- x@data
+  to.remove <- sapply(df, function(i) any(is.na(i)))
+  if(any(to.remove)) {
+    warning(
+      "missing data found in the following columns: ",
+      paste(colnames(df)[to.remove], collapse = ", "), "\n",
+      "these columns will not be used in BANTER event model."
+    )
+    df <- df[, !to.remove]
+  }
+  
+  df <- df %>% 
     dplyr::left_join(detector.prop, by = "event.id") %>% 
-    dplyr::left_join(detector.votes, by = "event.id") %>% 
+    dplyr::left_join(detector.votes, by = "event.id") 
+  
+  if("duration" %in% colnames(df)) {
+    if(all(!is.na(df$duration))) {
+      df <- df %>% 
+        dplyr::left_join(
+          numCalls(x, "event") %>% 
+            tidyr::gather("detector", "num", -.data$event.id) %>% 
+            dplyr::left_join(
+              dplyr::select(df, "event.id", "duration"), 
+              by = "event.id"
+            ) %>% 
+            dplyr::mutate(
+              detector = gsub("num.", "rate.", .data$detector),
+              num = .data$num / .data$duration
+            ) %>% 
+            dplyr::select(-.data$duration) %>% 
+            tidyr::spread("detector", "num"),
+          by = "event.id"
+        )
+    }
+  }
+      
+  df <- df %>% 
     dplyr::filter(complete.cases(.)) %>% 
     dplyr::mutate(species = as.character(.data$species)) 
   
   sampsize <- .getSampsize(df$species, sampsize, "Event model")
   
-  df <- df %>% 
+  x@model.data <- df %>% 
     dplyr::filter(.data$species %in% names(sampsize)) %>%
     dplyr::mutate(species = factor(.data$species)) %>% 
     tibble::column_to_rownames("event.id") %>% 
@@ -58,13 +92,15 @@ runBanterModel <- function(x, ntree, sampsize = 1) {
   
   x@model <- randomForest::randomForest(
     species ~ ., 
-    data = df,
+    data = x@model.data,
     ntree = ntree, 
     sampsize = sampsize, 
     replace = FALSE,
     importance = TRUE,
-    proxmity = TRUE
+    proximity = TRUE
   )
+  
+  x@timestamp <- Sys.time()
   
   x
 }

@@ -5,22 +5,27 @@
 \alias{removeBanterDetector}
 \title{Add a BANTER Detector Model}
 \usage{
-addBanterDetector(x, data, ntree, sampsize = 1, num.cores = NULL)
+addBanterDetector(x, data, name, ntree, sampsize = 1, importance = FALSE,
+  num.cores = NULL)
 
 removeBanterDetector(x, name)
 }
 \arguments{
 \item{x}{a \code{\link{banter_model}} object.}
 
-\item{data}{detector data.frame.}
+\item{data}{detector data.frame or named list of detector data.frames. If 
+a data.frame, then \code{name} must be provided.}
+
+\item{name}{detector name.}
 
 \item{ntree}{number of trees.}
 
 \item{sampsize}{number or fraction of samples to use in each tree.}
 
-\item{num.cores}{number of cores to use for Random Forest model.}
+\item{importance}{retain importance scores in model? Defaults to 
+\code{FALSE} and will be ignored if \code{num.cores > 1}.}
 
-\item{name}{name of detector.}
+\item{num.cores}{number of cores to use for Random Forest model.}
 }
 \value{
 a \code{\link{banter_model}} object with the detector model added or 
@@ -35,7 +40,9 @@ data(train.data)
 bant.mdl <- initBanterModel(train.data$events)
 # add the 'bp' (burst pulse) detector model
 bant.mdl <- addBanterDetector(
-  bant.mdl, train.data$detectors$bp, 
+  x = bant.mdl, 
+  data = train.data$detectors$bp, 
+  name = "bp",
   ntree = 50, sampsize = 1, num.cores = 1
 )
 bant.mdl
