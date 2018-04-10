@@ -49,12 +49,15 @@ rf <- getBanterModel(mdl)
 proximityPlot(rf)
 plotVotes(rf)
 impHeatmap(rf, 20)
+plotImpVarDist(rf, getBanterModelData(mdl), "species")
+
 
 # Prediction
 test.pred <- survey.test$events %>% 
   select(event.id, species) %>% 
   left_join(predict(mdl, survey.test)$predict.df, by = "event.id")
 test.pred
+plotPredictedProbs(rf)
 
 
 #save.image("data/test ws.rdata")
