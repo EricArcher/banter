@@ -23,17 +23,22 @@
 #' @export
 #' 
 initBanterModel <- function(x) {
+  # initialize object
   object <- banter_model(
     data = x, detectors = NULL, 
     model.data = NULL, model = NULL, 
     sampsize = NULL, timestamp = NULL
   )
+  
+  # check that required columns exist
   if(any(is.na(object@data$event.id))) {
     stop("'x' can't have missing data in the 'event.id' column.")
   }
   if(any(is.na(object@data$species))) {
     stop("'x' can't have missing data in the 'species' column.")
   }
+  
+  # if duration is present check that there is no missing data
   if("duration" %in% colnames(object@data)) {
     if(any(is.na(object@data$duration))) {
       msg <- paste0(
@@ -43,6 +48,9 @@ initBanterModel <- function(x) {
       warning(msg)
     }
   }
+  
+  # check species names
   object@data$species <- make.names(object@data$species, allow_ = FALSE)
+  
   object
 }

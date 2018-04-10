@@ -15,23 +15,28 @@
 #' @export
 #' 
 modelPctCorrect <- function(x) {
-if(is.null(x@detectors)) return(NULL)
-lapply(c(names(x@detectors), "event"), function(model) {
-  rf <- getBanterModel(x, model) 
-  if(is.null(rf)) return(NULL)
-  conf.mat <- table(rf$y, rf$predicted)
-  correct <- diag(conf.mat) / rowSums(conf.mat)
-  correct <- c(correct, Overall = sum(diag(conf.mat)) / sum(conf.mat))
-  data.frame(
-    species = names(correct), 
-    pct.correct = correct * 100, 
-    model = model,
-    stringsAsFactors = FALSE
-  )
-}) %>% 
-  dplyr::bind_rows() %>% 
-  dplyr::mutate(
-    model = factor(.data$model, levels = c(names(x@detectors), "event"))
-  ) %>% 
-  tidyr::spread("model", "pct.correct")
+  # check that detectors are present
+  if(is.null(x@detectors)) return(NULL)
+  
+  # creat list of data.frames for each detector
+  lapply(c(names(x@detectors), "event"), function(model) {
+    rf <- getBanterModel(x, model) 
+    if(is.null(rf)) return(NULL)
+    # get percent correct for each species and overall
+    conf.mat <- table(rf$y, rf$predicted)
+    correct <- diag(conf.mat) / rowSums(conf.mat)
+    correct <- c(correct, Overall = sum(diag(conf.mat)) / sum(conf.mat))
+    # create data.frame
+    data.frame(
+      species = names(correct), 
+      pct.correct = correct * 100, 
+      model = model,
+      stringsAsFactors = FALSE
+    )
+  }) %>% 
+    dplyr::bind_rows() %>% 
+    dplyr::mutate(
+      model = factor(.data$model, levels = c(names(x@detectors), "event"))
+    ) %>% 
+    tidyr::spread("model", "pct.correct")
 }

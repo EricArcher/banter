@@ -22,7 +22,7 @@ setGeneric("summary")
 #' @export 
 #' 
 summary.banter_model <- function(object, model = "event", n = 0.1, bins = 20, ...) {  
-  print(object, digits = 4)
+  print(object)
   rf <- getBanterModel(object, model)
   if(!is.null(rf)) {  
     sampsize <- if(model == "event") {

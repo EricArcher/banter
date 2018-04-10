@@ -26,9 +26,16 @@
 Detector randomForest function
 
 Checks to make sure 'model' is a valid model name
+x is a banter_model object
+
+Check that detectors are present
+x is a banter_model object
 
 Produces a vector of equal sample sizes for balanced Random Forest model.
+x is a vector of species or table of species frequencies
+n is desired sample size
 
 Returns matrix of mean species vote percentage by event
+x is a list of data.frames with species probability assignments
 }
 \keyword{internal}

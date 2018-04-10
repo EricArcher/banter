@@ -31,8 +31,10 @@
 runBanterModel <- function(x, ntree, sampsize = 1) {
   .stopIfNoDetectors(x)
   
+  # Proportion of calls by event
   detector.prop <- propCalls(x, "event")
   
+  # Mean votes
   detector.votes <- sapply(x@detectors, function(d) {
     votes <- d@model$votes %>% 
       prop.table(1) %>% 
@@ -41,6 +43,7 @@ runBanterModel <- function(x, ntree, sampsize = 1) {
   }, simplify = FALSE) %>% 
     .meanVotes()
   
+  # Check if any columns need to be removed because of missing data
   df <- x@data
   to.remove <- sapply(df, function(i) any(is.na(i)))
   if(any(to.remove)) {
@@ -52,10 +55,12 @@ runBanterModel <- function(x, ntree, sampsize = 1) {
     df <- df[, !to.remove]
   }
   
+  # construct full data to predict
   df <- df %>% 
     dplyr::left_join(detector.prop, by = "event.id") %>% 
     dplyr::left_join(detector.votes, by = "event.id") 
   
+  # add call rate columns if duration exists and there is no missing data
   if("duration" %in% colnames(df)) {
     if(all(!is.na(df$duration))) {
       df <- df %>% 
@@ -81,8 +86,10 @@ runBanterModel <- function(x, ntree, sampsize = 1) {
     dplyr::filter(complete.cases(.)) %>% 
     dplyr::mutate(species = as.character(.data$species)) 
   
+  # Get and check requested sample size
   sampsize <- .getSampsize(df$species, sampsize, "Event model")
   
+  # Remove species with insufficient sample sizes and finish data format
   x@model.data <- df %>% 
     dplyr::filter(.data$species %in% names(sampsize)) %>%
     dplyr::mutate(species = factor(.data$species)) %>% 

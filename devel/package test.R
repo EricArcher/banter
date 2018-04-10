@@ -1,6 +1,7 @@
 rm(list = ls())
 library(tidyverse)
 library(banter)
+library(rfPermute)
 
 ## test package example data
 
@@ -15,36 +16,45 @@ predict(ex.mdl, test.data)
 
 
 
-
-
 ## test CalCurCEAS data
 
 load("data/calcurceas data.rdata")
 
-ntree <- 50
-sampsize <- 1
-num.cores <- 4
+ntree <- 1000
+sampsize <- 5
 
+# Initialize model
 mdl <- initBanterModel(survey.train$events)
-
+# Add detectors using list
 mdl <- addBanterDetector(
   mdl, 
-  list(bp = survey.train$detectors$bp, dw = survey.train$detectors$dw), 
+  survey.train$detectors[c("bp", "dw")], 
   ntree = ntree,
-  sampsize = sampsize,
-  num.cores = num.cores
+  sampsize = sampsize
 )
+# Add detectors using data.frame
+mdl <- addBanterDetector(
+  mdl, 
+  data = survey.train$detectors$ec, 
+  name = "ec", 
+  ntree = ntree, 
+  sampsize = sampsize
+)
+# Run model
+mdl <- runBanterModel(mdl, 5000, 2)
 
-mdl <- addBanterDetector(mdl, survey.train$detectors$ec, "ec", ntree, sampsize, num.cores)
+# Model Summaries
+summary(mdl, bins = 20)
+rf <- getBanterModel(mdl)
+proximityPlot(rf)
+plotVotes(rf)
+impHeatmap(rf, 20)
 
-mdl <- runBanterModel(mdl, 200, 1)
-summary(mdl)
-
-predict(mdl, survey.test)
-
+# Prediction
 test.pred <- survey.test$events %>% 
   select(event.id, species) %>% 
-  left_join(predict(mdl, survey.test), by = "event.id")
+  left_join(predict(mdl, survey.test)$predict.df, by = "event.id")
 test.pred
+
 
 #save.image("data/test ws.rdata")

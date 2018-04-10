@@ -69,7 +69,7 @@ methods::setMethod(
     if(!is.null(object@timestamp)) {
       cat("Event model run at", format(object@timestamp))
     }
-    cat("\nNumber of events and model correct classification rate:\n")
+    cat("\nNumber of events and model classification rate:\n")
     print(df, digits = 4)
   }
 )

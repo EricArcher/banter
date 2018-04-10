@@ -40,7 +40,10 @@
 #' 
 addBanterDetector <- function(x, data, name, ntree, sampsize = 1, 
                               importance = FALSE, num.cores = NULL) {
+  # Check that detectors is a list
   if(is.null(x@detectors)) x@detectors <- list()
+  
+  # If data is a list of detectors
   if(methods::is(data, "list")) {
     if(is.null(names(data))) {
       stop("the list of detectors in 'data' must be named.")
@@ -52,6 +55,8 @@ addBanterDetector <- function(x, data, name, ntree, sampsize = 1,
         num.cores = num.cores
       )
     }, simplify = FALSE)
+  
+  # If data is a data.frame
   } else if(methods::is(data, "data.frame")) {
     if(missing(name)) {
       stop("'name' must be supplied with the 'data' data.frame")
@@ -62,6 +67,8 @@ addBanterDetector <- function(x, data, name, ntree, sampsize = 1,
       num.cores = num.cores
     )
   } else stop("'data' must be a list or data.frame.")
+  
+  # Sort detectors and empty event model info
   x@detectors <- x@detectors[order(names(x@detectors))]
   x@model.data <- x@model <- x@sampsize <- x@timestamp <- NULL
   x
@@ -83,19 +90,24 @@ removeBanterDetector <- function(x, name) {
 #' @keywords internal
 #' 
 .runDetectorModel <- function(x, data, name, ntree, 
-                              sampsize = 1, importance = FALSE, num.cores = NULL) {
+                              sampsize = 1, importance = FALSE, 
+                              num.cores = NULL) {
+  
+  # Combine event data with call ids in detector
   df <- x@data %>% 
     dplyr::select(.data$event.id, .data$species) %>% 
     dplyr::inner_join(data, by = "event.id") %>% 
     dplyr::mutate(species = as.character(.data$species)) %>% 
     as.data.frame
   
+  # Get and check requested sample size
   sampsize <- .getSampsize(
     df$species,
     sampsize,
     paste0("Detector model (", name, ")")
   )
 
+  # Remove missing species and format columns
   df <- df %>%
     dplyr::filter(.data$species %in% names(sampsize)) %>%
     dplyr::mutate(species = factor(.data$species)) %>%
@@ -104,9 +116,11 @@ removeBanterDetector <- function(x, name) {
     as.data.frame() %>%
     droplevels()
 
+  # Setup number of cores
   if(is.null(num.cores)) num.cores <- parallel::detectCores() - 1
   num.cores <- min(parallel::detectCores() - 1, num.cores)
   
+  # Create random forest paramete list
   params <- list(
     predictors = df %>% 
       dplyr::select(-.data$event.id, -.data$call.id, -.data$species),
@@ -115,17 +129,24 @@ removeBanterDetector <- function(x, name) {
     importance = importance & num.cores == 1
   )
   
+  # Don't use parallelizing if num.cores == 1
   rf <- if(num.cores == 1) {
     params$ntree <- ntree
     .rfFuncDetector(params) 
+    
+  # Parallel random forest
   } else {
+    # Create multicore rf function
     .clRF <- function(i, params) .rfFuncDetector(params)
     params$ntree <- ceiling(ntree / num.cores)
     
+    # Run random forest on Linux or Macs using mclapply
     rf.list <- if(Sys.info()[["sysname"]] %in% c("Linux", "Darwin")) {
       parallel::mclapply(
         1:num.cores, .clRF, params = params, mc.cores = num.cores
       )
+      
+    # Run random forest using parLapply
     } else {
       tryCatch({
         cl <- parallel::makeCluster(num.cores)
@@ -137,6 +158,7 @@ removeBanterDetector <- function(x, name) {
     do.call(randomForest::combine, rf.list)
   }
   
+  # Load banter_detector object
   banter_detector(
     name = name,
     ids = df[, c("event.id", "call.id")], 

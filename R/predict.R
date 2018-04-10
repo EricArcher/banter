@@ -26,6 +26,7 @@ setGeneric("predict")
 #' @method predict banter_model
 #' @export
 predict.banter_model <- function(object, new.data, ...) {
+  # Get number of calls in each detector for each event
   detector.num <- lapply(names(new.data$detectors), function(d) {
     new.data$events %>% 
       dplyr::left_join(new.data$detectors[[d]], by = "event.id") %>% 
@@ -36,6 +37,7 @@ predict.banter_model <- function(object, new.data, ...) {
   }) %>%
     dplyr::bind_rows()
   
+  # Convert number to proportion of calls
   detector.prop <- detector.num %>% 
     dplyr::group_by(.data$event.id) %>% 
     dplyr::mutate(n = n / sum(n, na.rm = TRUE)) %>% 
@@ -44,6 +46,7 @@ predict.banter_model <- function(object, new.data, ...) {
     replace(is.na(.), 0) %>% 
     as.data.frame()
   
+  # Calculate mean votes for each event
   detector.votes <- sapply(names(object@detectors), function(d) {
     predict(
       object@detectors[[d]]@model, 
@@ -58,10 +61,12 @@ predict.banter_model <- function(object, new.data, ...) {
   }, simplify = FALSE) %>% 
     .meanVotes()
   
+  # Construct data.frame to predict
   df <- new.data$events %>% 
     dplyr::left_join(detector.prop, by = "event.id") %>% 
     dplyr::left_join(detector.votes, by = "event.id")
     
+    # add call rate columns if duration is present and there is no missing data
     if("duration" %in% colnames(df)) {
       if(all(!is.na(df$duration))) {
         df <- df %>% 
