@@ -10,6 +10,7 @@ Depends:
   magrittr
 Imports:
   dplyr,
+  gridExtra,
   methods,
   parallel,
   plyr,

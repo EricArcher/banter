@@ -25,7 +25,8 @@
 initBanterModel <- function(x) {
   object <- banter_model(
     data = x, detectors = NULL, 
-    model.data = NULL, model = NULL, timestamp = NULL
+    model.data = NULL, model = NULL, 
+    sampsize = NULL, timestamp = NULL
   )
   if(any(is.na(object@data$event.id))) {
     stop("'x' can't have missing data in the 'event.id' column.")

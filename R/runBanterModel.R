@@ -99,6 +99,7 @@ runBanterModel <- function(x, ntree, sampsize = 1) {
     importance = TRUE,
     proximity = TRUE
   )
+  x@sampsize <- sampsize
   
   x@timestamp <- Sys.time()
   

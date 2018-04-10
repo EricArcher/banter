@@ -24,7 +24,7 @@ lapply(c(names(x@detectors), "event"), function(model) {
   correct <- c(correct, Overall = sum(diag(conf.mat)) / sum(conf.mat))
   data.frame(
     species = names(correct), 
-    pct.correct = correct, 
+    pct.correct = correct * 100, 
     model = model,
     stringsAsFactors = FALSE
   )

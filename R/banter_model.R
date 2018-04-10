@@ -20,6 +20,7 @@ banter_model <- methods::setClass(
     detectors = "listOrNull",
     model.data = "dfOrNull",
     model = "classifier",
+    sampsize = "numOrNull",
     timestamp = "dateOrNull"
   )
 )
@@ -69,6 +70,6 @@ methods::setMethod(
       cat("Event model run at", format(object@timestamp))
     }
     cat("\nNumber of events and model correct classification rate:\n")
-    print(df)
+    print(df, digits = 4)
   }
 )

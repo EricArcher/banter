@@ -23,7 +23,8 @@ banter_detector <- methods::setClass(
   slots = c(
     name = "character",
     ids = "data.frame",
-    model = "classifier"
+    model = "classifier",
+    sampsize = "numOrNull"
   )
 )
 

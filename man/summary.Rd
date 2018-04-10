@@ -10,7 +10,8 @@
 \usage{
 summary(object, ...)
 
-\method{summary}{banter_model}(object, model = "event", n = 0.1, ...)
+\method{summary}{banter_model}(object, model = "event", n = 0.1,
+  bins = 20, ...)
 }
 \arguments{
 \item{object}{a \code{\link{banter_model}} object.}
@@ -22,6 +23,8 @@ to summarize the event-level model. Can also be name of a detector.}
 
 \item{n}{number of final iterations to summarize OOB error rate for. If 
 between 0 and 1 is taken as a proportion of chain.}
+
+\item{bins}{number of bins in inbag histogram.}
 }
 \description{
 Display summaries for event and detector models

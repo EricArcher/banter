@@ -7,9 +7,11 @@
 #'   to summarize the event-level model. Can also be name of a detector.
 #' @param n number of final iterations to summarize OOB error rate for. If 
 #'   between 0 and 1 is taken as a proportion of chain.
+#' @param bins number of bins in inbag histogram.
 #' @param ... ignored.
 #'   
 #' @importFrom rfPermute confusionMatrix  
+#' @importFrom gridExtra grid.arrange
 #' 
 #' @exportMethod summary
 setGeneric("summary")
@@ -19,17 +21,31 @@ setGeneric("summary")
 #' @method summary banter_model
 #' @export 
 #' 
-summary.banter_model <- function(object, model = "event", n = 0.1, ...) {  
-  print(object)
+summary.banter_model <- function(object, model = "event", n = 0.1, bins = 20, ...) {  
+  print(object, digits = 4)
   rf <- getBanterModel(object, model)
   if(!is.null(rf)) {  
+    sampsize <- if(model == "event") {
+      object@sampsize
+    } else {
+      object@detectors[[model]]@sampsize
+    } 
+    
     cat("\nDistribution of percent correctly classified overall in last 'n' trees:\n")
-    print(.rfPctCorrectSmry(rf, n))
-    cat("\nSample inbag rate distribution:\n")
-    print(round(summary(1 - (rf$oob.times / rf$ntree)), 3))
+    print(round(.rfPctCorrectSmry(rf, n) * 100, 2))
+    cat("\nSample inbag rate distribution:\n") 
+    print(rbind(
+      expected = round(summary(as.vector(sampsize / table(rf$y))), 3),
+      observed = round(summary(1 - (rf$oob.times / rf$ntree)), 3)
+    ))
     cat("\nConfusion matrix:\n")
-    print(rfPermute::confusionMatrix(rf))
-    print(rfPermute::plotRFtrace(rf))
+    print(round(rfPermute::confusionMatrix(rf), 2))
+    
+    grid.arrange(
+      rfPermute::plotRFtrace(rf, plot = FALSE),
+      rfPermute::plotInbag(rf, sampsize = sampsize, bins = bins, plot = FALSE),
+      nrow = 2
+    )
   }
 }
 

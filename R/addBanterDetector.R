@@ -63,7 +63,7 @@ addBanterDetector <- function(x, data, name, ntree, sampsize = 1,
     )
   } else stop("'data' must be a list or data.frame.")
   x@detectors <- x@detectors[order(names(x@detectors))]
-  x@model.data <- x@model <- x@timestamp <- NULL
+  x@model.data <- x@model <- x@sampsize <- x@timestamp <- NULL
   x
 }
 
@@ -73,7 +73,7 @@ addBanterDetector <- function(x, data, name, ntree, sampsize = 1,
 removeBanterDetector <- function(x, name) {
   x@detectors[[name]] <- NULL
   if(length(x@detectors) == 0) x@detectors <- NULL
-  x@model <- NULL
+  x@model.data <- x@model <- x@sampsize <- x@timestamp <- NULL
   x
 }
 
@@ -137,11 +137,11 @@ removeBanterDetector <- function(x, name) {
     do.call(randomForest::combine, rf.list)
   }
   
-  new(
-    "banter_detector",
+  banter_detector(
     name = name,
     ids = df[, c("event.id", "call.id")], 
-    model = rf
+    model = rf,
+    sampsize = sampsize
   ) 
 }
 

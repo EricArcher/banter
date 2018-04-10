@@ -2,9 +2,6 @@
 
 ### To Do
 
-* Consistently report percent correctly classified
-* Include expected mean inbag in model diagnostic summary
-
 * What text output needs to be available (data.frames to save)?
 * Function argument checking
 * Completing help files
