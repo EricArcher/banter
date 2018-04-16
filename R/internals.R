@@ -32,6 +32,14 @@
 .getSampsize <- function(x, n, warn.label) {
   if(n < 0) n <- 1
   freq <- if(is.table(x)) x else table(x)
+  
+  if(length(freq) < 2) {
+    stop(
+      warn.label, " has ", length(freq), 
+      " species (need at least 2 for model)"
+    )
+  }
+  
   n <- if(n >= 1) n else round(min(freq) * n, 0)
   if(n == 0) n <- 1
   
@@ -39,19 +47,21 @@
   good.freq <- freq[freq > n]
   
   if(length(good.freq) < 2) {
-    stop(paste0(
+    stop(
       warn.label, ":\n",
       "sampsize = ", n,
       " is >= too many species frequencies (need at least 2 for model):\n",
-      paste0("  ", names(freq), ": ", freq, "\n", collapse = "")
-    ))
+      paste0("  ", names(freq), ": ", freq, "\n", collapse = ""),
+      call. = FALSE
+    )
   } else if(length(bad.freq) > 0) {
-    warning(paste0(
+    warning(
       warn.label, ": sampsize = ", n, " is >= species frequencies:\n",
       paste0("  ", names(bad.freq), ": ", bad.freq, "\n", collapse = ""),
       "These species will be used in the model:\n",
-      paste0("  ", names(good.freq), ": ", good.freq, "\n", collapse = "")
-    ), call. = FALSE, immediate. = TRUE) 
+      paste0("  ", names(good.freq), ": ", good.freq, "\n", collapse = ""), 
+      call. = FALSE, immediate. = TRUE
+    ) 
     setNames(rep(n, length(good.freq)), names(good.freq))
   } else {
     setNames(rep(n, length(freq)), names(freq))

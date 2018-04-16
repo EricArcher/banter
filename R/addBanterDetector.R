@@ -93,6 +93,11 @@ removeBanterDetector <- function(x, name) {
                               sampsize = 1, importance = FALSE, 
                               num.cores = NULL) {
   
+  # Check that "event.id" and "call.id" exist
+  if(!all(c("event.id", "call.id") %in% colnames(data))) {
+    stop("'data' for detector ", name, " must have 'event.id' and 'call.id' columns")
+  }
+  
   # Combine event data with call ids in detector
   df <- x@data %>% 
     dplyr::select(.data$event.id, .data$species) %>% 
@@ -120,7 +125,7 @@ removeBanterDetector <- function(x, name) {
   if(is.null(num.cores)) num.cores <- parallel::detectCores() - 1
   num.cores <- min(parallel::detectCores() - 1, num.cores)
   
-  # Create random forest paramete list
+  # Create random forest parameter list
   params <- list(
     predictors = df %>% 
       dplyr::select(-.data$event.id, -.data$call.id, -.data$species),
