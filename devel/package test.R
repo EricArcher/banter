@@ -30,7 +30,8 @@ mdl <- addBanterDetector(
   mdl, 
   survey.train$detectors[c("bp", "dw")], 
   ntree = ntree,
-  sampsize = sampsize
+  sampsize = sampsize,
+  num.cores = 1
 )
 # Add detectors using data.frame
 mdl <- addBanterDetector(
@@ -50,14 +51,10 @@ proximityPlot(rf)
 plotVotes(rf)
 impHeatmap(rf, 20)
 plotImpVarDist(rf, getBanterModelData(mdl), "species")
-
-
-# Prediction
-test.pred <- survey.test$events %>% 
-  select(event.id, species) %>% 
-  left_join(predict(mdl, survey.test)$predict.df, by = "event.id")
-test.pred
 plotPredictedProbs(rf)
 
+# Prediction
+test.pred <- predict(mdl, survey.test)
+for(x in test.pred) print(head(x))
 
 #save.image("data/test ws.rdata")

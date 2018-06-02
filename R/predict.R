@@ -3,11 +3,21 @@
 #' @description Predict species of events for novel data from a BANTER model.
 #'
 #' @param object a \code{\link{banter_model}} object.
-#' @param new.data a list of event and detector data.
+#' @param new.data a list of event and detector data that has the same 
+#'   predictors as in the \code{banter_model}. It must contain elements called 
+#'   \code{events} and \code{detectors}. The \code{events} element must be a 
+#'   data.frame that has a column called \code{event.id} and the same
+#'   predictor columns as the event data used to initialize the banter model 
+#'   (see \code{\link{initBanterModel}}). The \code{detectors} element must be 
+#'   a named list with the same detectors used to build the model 
+#'   (see \code{\link{addBanterDetector}}).
 #' @param ... unused.
 #' 
-#' @return A data.frame with the predicted species (\code{"predicted"}) followed 
-#'   by columns of assignment probabilities.
+#' @return A list with the following elements: \describe{
+#'   \item{events}{the data frame used in the event model for predictions.}
+#'   \item{predict.df}{data.frame of predicted species and assignment 
+#'      probabilities for each event.}
+#' }
 #'   
 #' @author Eric Archer \email{eric.archer@@noaa.gov}
 #' 
