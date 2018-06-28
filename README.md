@@ -10,7 +10,7 @@
 
 ### Description
 
-*banter* is a package for creating hierarchical acoustic event classifiers.
+*banter* is a package for creating hierarchical acoustic event classifiers based on multiple call type detectors.
 
 ### Installation
 

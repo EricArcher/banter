@@ -1,7 +1,8 @@
 Package: banter
 Type: Package
 Title: BANTER - BioAcoustic EveNT ClassifiER
-Description: Create classifier for acoustic events.
+Description: Create a hierarchical acoustic event species classifier based on 
+  multiple call type detectors.
 Version: 0.0.1
 Authors@R: c(
   EA = person("Eric", "Archer", email = "eric.archer@noaa.gov", role = c("aut", "cre")),
