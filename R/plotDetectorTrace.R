@@ -5,11 +5,7 @@
 #' @param detector names of models to plot. If set to \code{NULL}, traces for all
 #'   models will be shown.
 #' 
-#' @return In the plot that is created, the upper panel shows the trace of the 
-#'   Random Forest model OOB rate across sequential trees in the forest. The
-#'   lower plot shows a frequency histogram of the number of times each sample 
-#'   was inbag (used as training data in a tree in the forest). The vertical 
-#'   red lines indicate the expected inbag rate for samples of each species.
+#' @seealso \code{\link[rfPermute]{plotRFtrace}}
 #'
 #' @author Eric Archer \email{eric.archer@@noaa.gov}
 #' 
@@ -44,6 +40,8 @@ plotDetectorTrace <- function(x, detector = NULL) {
   traces$bottom <- "trees"
   traces$left = "error"
   
+  p <- do.call(gridExtra::grid.arrange, traces)
+  print(p)
   
-  do.call(gridExtra::grid.arrange, traces)
+  invisible(NULL)
 }

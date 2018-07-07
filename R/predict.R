@@ -38,15 +38,12 @@
 #' test.pred <- predict(bant.mdl, test.data)
 #' test.pred
 #' 
-#' @importFrom dplyr n
 #' @importFrom magrittr %>%
-#' @importFrom methods setGeneric setMethod
 #' @importFrom plyr .
-#' @importFrom randomForest randomForest
 #' @importFrom rlang .data
 #' 
 #' @exportMethod predict
-setGeneric("predict")
+methods::setGeneric("predict")
 
 #' @name predict
 #' @rdname predict

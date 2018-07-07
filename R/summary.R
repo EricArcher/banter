@@ -30,12 +30,9 @@
 #' # run BANTER event model
 #' bant.mdl <- runBanterModel(bant.mdl, ntree = 1000, sampsize = 1)
 #' summary(bant.mdl)
-#'    
-#' @importFrom rfPermute confusionMatrix  
-#' @importFrom gridExtra grid.arrange
 #' 
 #' @exportMethod summary
-setGeneric("summary")
+methods::setGeneric("summary")
 
 #' @name summary
 #' @rdname summary
@@ -62,7 +59,7 @@ summary.banter_model <- function(object, model = "event", n = 0.1, bins = 20, ..
     cat("\nConfusion matrix:\n")
     print(round(rfPermute::confusionMatrix(rf), 2))
     
-    grid.arrange(
+    gridExtra::grid.arrange(
       rfPermute::plotRFtrace(rf, plot = FALSE),
       rfPermute::plotInbag(rf, sampsize = sampsize, bins = bins, plot = FALSE),
       nrow = 2

@@ -8,14 +8,10 @@
 \alias{predict,banter_model-method}
 \title{Predict BANTER events}
 \usage{
-predict(object, ...)
-
 \method{predict}{banter_model}(object, new.data, ...)
 }
 \arguments{
 \item{object}{a \code{\link{banter_model}} object.}
-
-\item{...}{unused.}
 
 \item{new.data}{a list of event and detector data that has the same 
 predictors as in the \code{banter_model}. It must contain elements called 
@@ -25,6 +21,8 @@ predictor columns as the event data used to initialize the banter model
 (see \code{\link{initBanterModel}}). The \code{detectors} element must be 
 a named list with the same detectors used to build the model 
 (see \code{\link{addBanterDetector}}).}
+
+\item{...}{unused.}
 }
 \value{
 A list with the following elements: \describe{
