@@ -1,16 +1,8 @@
 # banter
 
-### To Do
-
-* What text output needs to be available (data.frames to save)?
-* Function argument checking
-* Completing help files
-* Unit tests
-* Vignettes
-
 ### Description
 
-*banter* is a package for creating hierarchical acoustic event classifiers based on multiple call type detectors.
+*banter* is a package for creating hierarchical acoustic event classifiers out of multiple call type detectors.
 
 ### Installation
 
@@ -96,6 +88,6 @@ predict(bant.mdl, test.data)
 ### Reference
 Rankin, S., Archer, F., Keating, J. L., Oswald, J. N., Oswald, M., Curtis, A. and Barlow, J. (2017) Acoustic classification of dolphins in the California Current using whistles, echolocation clicks, and burst pulses. Mar Mam Sci, 33: 520-540. [doi:10.1111/mms.12381](https://onlinelibrary.wiley.com/doi/abs/10.1111/mms.12381)
 
-### version 0.0.1 (current on GitHub)
+### version 0.9.2
 
 * Initial release
