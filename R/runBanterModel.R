@@ -25,7 +25,6 @@
 #' @importFrom magrittr %>%
 #' @importFrom plyr .
 #' @importFrom rlang .data
-#' @importFrom stats complete.cases setNames
 #' @export
 #' 
 runBanterModel <- function(x, ntree, sampsize = 1) {
@@ -83,7 +82,7 @@ runBanterModel <- function(x, ntree, sampsize = 1) {
   }
       
   df <- df %>% 
-    dplyr::filter(complete.cases(.)) %>% 
+    dplyr::filter(stats::complete.cases(.)) %>% 
     dplyr::mutate(species = as.character(.data$species)) 
   
   # Get and check requested sample size

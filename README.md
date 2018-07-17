@@ -11,11 +11,11 @@ To install the latest version from GitHub:
 ```r
 # make sure you have Rtools installed
 if(!require('devtools')) install.packages('devtools')
-# install from GitHub
+# install package from GitHub
 devtools::install_github('ericarcher/banter')
 ```
 
-### Tutorial
+### Quick Tutorial
 
 The BANTER model is initialized with a data.frame of events. There is one row per event and it must have a column called `event.id` which is a unique id for each event, and a column called `species` which assigns each event to a given species. Every other column in the data.frame will be used as a predictor variable for the events.  
 In the package, an example data.frame is in the `train.data` example data list as the `$events` element.
@@ -88,6 +88,8 @@ predict(bant.mdl, test.data)
 ### Reference
 Rankin, S., Archer, F., Keating, J. L., Oswald, J. N., Oswald, M., Curtis, A. and Barlow, J. (2017) Acoustic classification of dolphins in the California Current using whistles, echolocation clicks, and burst pulses. Mar Mam Sci, 33: 520-540. [doi:10.1111/mms.12381](https://onlinelibrary.wiley.com/doi/abs/10.1111/mms.12381)
 
-### version 0.9.3
+### version 0.9.4 (devel)
+
+### version 0.9.3 (on CRAN)
 
 * Initial CRAN release

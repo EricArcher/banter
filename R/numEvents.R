@@ -43,6 +43,6 @@ numEvents <- function(x, model = "event") {
   spp.fac <- factor(df$species, levels = sort(unique(x@data$species)))
   table(species = spp.fac) %>% 
     as.data.frame() %>% 
-    setNames(c("species", "num.events")) %>% 
+    stats::setNames(c("species", "num.events")) %>% 
     dplyr::mutate(species = as.character(.data$species)) 
 }

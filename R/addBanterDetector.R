@@ -84,9 +84,6 @@ removeBanterDetector <- function(x, name) {
   x
 }
 
-#' @importFrom parallel detectCores makeCluster clusterExport clusterEvalQ parLapply stopCluster mclapply
-#' @importFrom randomForest randomForest combine
-#' @importFrom utils sessionInfo
 #' @keywords internal
 #' 
 .runDetectorModel <- function(x, data, name, ntree, 

@@ -26,7 +26,6 @@
 #' x is a vector of species or table of species frequencies
 #' n is desired sample size
 #' @name internals
-#' @importFrom stats setNames
 #' @keywords internal
 #' 
 .getSampsize <- function(x, n, warn.label) {
@@ -62,9 +61,9 @@
       paste0("  ", names(good.freq), ": ", good.freq, "\n", collapse = ""), 
       call. = FALSE, immediate. = TRUE
     ) 
-    setNames(rep(n, length(good.freq)), names(good.freq))
+    stats::setNames(rep(n, length(good.freq)), names(good.freq))
   } else {
-    setNames(rep(n, length(freq)), names(freq))
+    stats::setNames(rep(n, length(freq)), names(freq))
   }
 }
 

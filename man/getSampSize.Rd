@@ -16,7 +16,7 @@ to summarize the event-level model. Can also be name of a detector.}
 a vector of sample sizes.
 }
 \description{
-Return sample size used for a BANTER model.
+Return sample sizes used for a BANTER model.
 }
 \examples{
 data(train.data)

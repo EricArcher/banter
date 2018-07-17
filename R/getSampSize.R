@@ -1,5 +1,5 @@
 #' @title Sample Size
-#' @description Return sample size used for a BANTER model.
+#' @description Return sample sizes used for a BANTER model.
 #' 
 #' @param x a \code{\link{banter_model}} object.
 #' @param model name of model to extract. Default is \code{"event"} 

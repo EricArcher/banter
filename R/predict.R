@@ -112,7 +112,7 @@ predict.banter_model <- function(object, new.data, ...) {
     }
   
   df <- df %>% 
-    dplyr::filter(complete.cases(.))
+    dplyr::filter(stats::complete.cases(.))
   
   list(
     events = df,
