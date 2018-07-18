@@ -37,8 +37,8 @@ plotDetectorTrace <- function(x, detector = NULL) {
       ggplot2::theme(axis.title = ggplot2::element_blank())
   })
   traces$ncol <- 1
-  traces$bottom <- "trees"
-  traces$left = "error"
+  traces$bottom <- "Trees"
+  traces$left = "Error"
   
   p <- do.call(gridExtra::grid.arrange, traces)
   print(p)

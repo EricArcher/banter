@@ -18,7 +18,7 @@ Imports:
   plyr,
   randomForest,
   ranger,
-  rfPermute,
+  rfPermute (>= 2.1.6),
   rlang,
   stats,
   tibble,
