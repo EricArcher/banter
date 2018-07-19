@@ -27,7 +27,6 @@
 #' propCalls(bant.mdl, "species")
 #' propCalls(bant.mdl, "event")
 #' 
-#' @importFrom dplyr n
 #' @importFrom magrittr %>%
 #' @importFrom plyr .
 #' @importFrom rlang .data
@@ -60,7 +59,7 @@ propCalls <- function(x, by = c("species", "event")) {
   df %>% 
     tidyr::gather("detector", "n", -by) %>% 
     dplyr::group_by(.dots = by) %>%
-    dplyr::mutate(prop = n / sum(n, na.rm = TRUE)) %>% 
+    dplyr::mutate(prop = .data$n / sum(.data$n, na.rm = TRUE)) %>% 
     dplyr::ungroup() %>% 
     dplyr::select(-.data$n) %>% 
     dplyr::mutate(detector = gsub("num.", "prop.", .data$detector)) %>% 

@@ -6,9 +6,9 @@ load("data/calcurceas data.rdata")
 train.data <- list(
   events = survey$events %>% 
     filter(training) %>% 
-    group_by(species) %>% 
-    do(sample_n(., min(nrow(.), 5))) %>% 
-    ungroup() %>% 
+    # group_by(species) %>% 
+    # do(sample_n(., min(nrow(.), 5))) %>% 
+    # ungroup() %>% 
     mutate(species = gsub(" ", "", species)) %>%
     select(event.id, species, duration) %>% 
     as.data.frame
@@ -17,7 +17,7 @@ train.data$detectors <- sapply(survey$detectors, function(d) {
   df <- d %>% 
     filter(event.id %in% train.data$events$event.id) %>% 
     group_by(event.id) %>% 
-    do(sample_n(., min(nrow(.), 100))) %>% 
+    do(sample_n(., min(nrow(.), 50))) %>% 
     ungroup() %>% 
     as.data.frame
   attr(df, "name") <- attr(d, "name")
@@ -40,7 +40,7 @@ test.data$detectors <- sapply(survey$detectors, function(d) {
   df <- d %>% 
     filter(event.id %in% test.data$events$event.id) %>% 
     group_by(event.id) %>% 
-    do(sample_n(., min(nrow(.), 100))) %>% 
+    do(sample_n(., min(nrow(.), 50))) %>% 
     ungroup() %>% 
     as.data.frame
   attr(df, "name") <- attr(d, "name")

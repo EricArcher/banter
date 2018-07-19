@@ -17,11 +17,11 @@ Imports:
   parallel,
   plyr,
   randomForest,
-  ranger,
   rfPermute (>= 2.1.6),
   rlang,
   stats,
   tibble,
   tidyr
+Suggests: testthat
 License: GNU General Public License
 RoxygenNote: 6.0.1
