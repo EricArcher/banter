@@ -1,3 +1,9 @@
+[![CRAN version](http://www.r-pkg.org/badges/version/banter?color=red)](https://cran.r-project.org/package=banter)
+[![CRAN last day downloads](http://cranlogs.r-pkg.org/badges/last-day/banter?color=red)](https://cran.r-project.org/package=banter)
+[![CRAN last week downloads](http://cranlogs.r-pkg.org/badges/last-week/banter?color=red)](https://cran.r-project.org/package=banter)
+[![CRAN last month downloads](http://cranlogs.r-pkg.org/badges/banter?color=red)](https://cran.r-project.org/package=banter)
+[![CRAN total downloads](http://cranlogs.r-pkg.org/badges/grand-total/banter?color=red)](https://cran.r-project.org/package=banter)  
+
 # banter
 
 ### Description

@@ -7,6 +7,10 @@ mdl <- initBanterModel(train.data$events) %>%
     ntree = 50, sampsize = 1, num.cores = 1
   ) 
 
+test_that("getDetectorNames returns correct names", {
+  expect_equal(getDetectorNames(mdl), names(train.data$detectors))
+})
+
 test_that("summary returns correct summary matrix", {
   expect_known_value(summary(mdl), "test-summary")
 })
