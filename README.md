@@ -96,7 +96,7 @@ Rankin, S., Archer, F., Keating, J. L., Oswald, J. N., Oswald, M., Curtis, A. an
 
 ### version 0.9.4 (devel)
 
-* Detector names are now first run through `make.names()` in `addBanterDetector()` to remove spaces and special characters which was causing an error in `runBanterModel()`
+* Detector names and detector predictor column names are now first run through `make.names()` in `addBanterDetector()` to remove spaces and special characters which was causing an error in `runBanterModel()`
 
 ### version 0.9.3 (on CRAN)
 
