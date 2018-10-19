@@ -24,4 +24,4 @@ Imports:
   tidyr
 Suggests: testthat
 License: GNU General Public License
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0

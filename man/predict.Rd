@@ -2,9 +2,7 @@
 % Please edit documentation in R/predict.R
 \name{predict}
 \alias{predict}
-\alias{predict}
 \alias{predict.banter_model}
-\alias{predict}
 \alias{predict,banter_model-method}
 \title{Predict BANTER events}
 \usage{

@@ -2,9 +2,7 @@
 % Please edit documentation in R/summary.R
 \name{summary}
 \alias{summary}
-\alias{summary}
 \alias{summary.banter_model}
-\alias{summary}
 \alias{summary,banter_model-method}
 \title{BANTER Classifier Model Summary}
 \usage{

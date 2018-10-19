@@ -7,8 +7,8 @@ library(rfPermute)
 
 data(train.data)
 ex.mdl <- initBanterModel(train.data$events) %>%
-  addBanterDetector(train.data$detectors, ntree = 1000, sampsize = 1) %>%
-  runBanterModel(ntree = 1000, sampsize = 1)
+  addBanterDetector(train.data$detectors, ntree = 100, sampsize = 1) %>%
+  runBanterModel(ntree = 100, sampsize = 1)
 summary(ex.mdl)
 
 data(test.data)
