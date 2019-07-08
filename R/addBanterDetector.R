@@ -106,6 +106,18 @@ removeBanterDetector <- function(x, name) {
     dplyr::mutate(species = as.character(.data$species)) %>% 
     as.data.frame
   
+  # Check if any columns need to be removed because of missing data
+  to.remove <- sapply(df, function(i) any(is.na(i)))
+  if(any(to.remove)) {
+    warning(
+      "in the '", name, 
+      "' detector, missing data found in the following columns: ",
+      paste(colnames(df)[to.remove], collapse = ", "), "\n",
+      "these columns will not be used in BANTER detector model."
+    )
+    df <- df[, !to.remove]
+  }
+  
   # Get and check requested sample size
   sampsize <- .getSampsize(
     df$species,
