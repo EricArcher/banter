@@ -25,3 +25,4 @@ Imports:
 Suggests: testthat
 License: GNU General Public License
 RoxygenNote: 6.1.1
+Encoding: UTF-8
