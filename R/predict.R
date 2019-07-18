@@ -50,6 +50,27 @@ methods::setGeneric("predict")
 #' @method predict banter_model
 #' @export
 predict.banter_model <- function(object, new.data, ...) {
+  # Check that 'new.data' has elements called 'events' and 'detectors'
+  if(!all(c("events", "detectors") %in% names(new.data))) {
+    stop(
+      "'new.data' must have elements named 'events' and 'detectors'",
+      .call = FALSE
+    )
+  }
+  
+  # Check that all necessary detectors are present in 'new.data'
+  missing.detectors <- setdiff(
+    names(object@detectors), 
+    names(new.data$detectors)
+  )
+  if(length(missing.detectors) > 0) {
+    stop(
+      "Can't predict with 'new.data', the following detectors are missing: ", 
+      paste(missing.detectors, collapse = ", "),
+      .call = FALSE
+    )
+  }
+  
   # Get number of calls in each detector for each event
   detector.num <- lapply(names(new.data$detectors), function(d) {
     new.data$events %>% 
