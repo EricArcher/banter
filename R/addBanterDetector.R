@@ -48,9 +48,12 @@ addBanterDetector <- function(x, data, name, ntree, sampsize = 1,
     if(is.null(names(data))) {
       stop("the list of detectors in 'data' must be named.")
     }
-    names(data) <- make.names(names(data))
+    .checkValidStrings(names(data), "detector names")
     x@detectors[names(data)] <- sapply(names(data), function(detector) {
-      colnames(data[[detector]]) <- make.names(colnames(data[[detector]]))
+      .checkValidStrings(
+        colnames(data[[detector]]), 
+        paste0("detector '", detector, "' column names")
+      )
       .runDetectorModel(
         x = x, data = data[[detector]], name = detector,
         ntree = ntree, sampsize = sampsize, importance = importance,
@@ -63,8 +66,8 @@ addBanterDetector <- function(x, data, name, ntree, sampsize = 1,
     if(missing(name)) {
       stop("'name' must be supplied with the 'data' data.frame")
     }
-    name <- make.names(name)
-    colnames(data) <- make.names(colnames(data))
+    .checkValidStrings(name, "name")
+    .checkValidStrings(colnames(data), "column names")
     x@detectors[[name]] <- .runDetectorModel(
       x = x, data = data, name = name, 
       ntree = ntree, sampsize = sampsize, importance = importance,

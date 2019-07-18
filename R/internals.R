@@ -1,3 +1,21 @@
+#' Checks to make sure 'x' contains syntactically valid and unique characters
+#' @rdname internals
+#' @keywords internal
+#' 
+.checkValidStrings <- function(x, label) {
+  x.valid <- make.names(x)
+  not.valid <- x[x != make.names(x, unique = TRUE)]
+  if(length(not.valid) > 0) {
+    stop(
+      "the following values are not valid or are not unique in ",
+      label, " : ", paste(not.valid, collapse = ", "),
+      ". Use the `make.names()` function to convert.",
+      call. = FALSE
+    )
+  }
+  invisible(NULL)
+}
+
 #' Checks to make sure 'model' is a valid model name
 #' x is a banter_model object
 #' @rdname internals
