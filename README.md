@@ -96,7 +96,8 @@ Rankin, S., Archer, F., Keating, J. L., Oswald, J. N., Oswald, M., Curtis, A. an
 
 ### version 0.9.4 (devel)
 
-* Detector names and detector predictor column names are now first run through `make.names()` in `addBanterDetector()` to remove spaces and special characters which was causing an error in `runBanterModel()`
+* Detector names and detector predictor column names submitted to `addBanterDetector()` are now first checked to make sure they are syntactically valid and unique by comparing them with the results from `make.names()`.
+* Detector names and detector predictor column names in `new.data` submitted to `predict()` are first checked to make sure all necessary detectors and columns in the classification model are present.
 
 ### version 0.9.3 (on CRAN)
 
