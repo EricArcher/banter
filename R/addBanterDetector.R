@@ -7,7 +7,8 @@
 #'   a data.frame, then \code{name} must be provided.
 #' @param name detector name.
 #' @param ntree number of trees.
-#' @param sampsize number or fraction of samples to use in each tree.
+#' @param sampsize number or fraction of samples to use in each tree. If < 1, 
+#'   then it will be used to select this fraction of the smallest sample size.
 #' @param importance retain importance scores in model? Defaults to 
 #'   \code{FALSE} and will be ignored if \code{num.cores > 1}.
 #' @param num.cores number of cores to use for Random Forest model.

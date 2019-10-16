@@ -20,7 +20,8 @@ a data.frame, then \code{name} must be provided.}
 
 \item{ntree}{number of trees.}
 
-\item{sampsize}{number or fraction of samples to use in each tree.}
+\item{sampsize}{number or fraction of samples to use in each tree. If < 1, 
+then it will be used to select this fraction of the smallest sample size.}
 
 \item{importance}{retain importance scores in model? Defaults to 
 \code{FALSE} and will be ignored if \code{num.cores > 1}.}
