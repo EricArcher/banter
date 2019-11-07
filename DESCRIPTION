@@ -17,6 +17,7 @@ Imports:
   parallel,
   plyr,
   randomForest,
+  rfPermute,
   rlang,
   stats,
   tibble,
