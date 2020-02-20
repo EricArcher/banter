@@ -40,8 +40,6 @@
 #' bant.mdl <- removeBanterDetector(bant.mdl, "bp")
 #' bant.mdl
 #' 
-#' @importFrom rlang .data
-#' @importFrom magrittr %>%
 #' @export
 #' 
 addBanterDetector <- function(x, data, name, ntree, sampsize = 1, 
@@ -156,34 +154,23 @@ removeBanterDetector <- function(x, name) {
     importance = importance & num.cores == 1
   )
   
-  # Don't use parallelizing if num.cores == 1
-  rf <- if(num.cores == 1) {
-    params$ntree <- ntree
-    .rfFuncDetector(params) 
-    
-  # Parallel random forest
-  } else {
-    # Create multicore rf function
-    .clRF <- function(i, params) .rfFuncDetector(params)
-    params$ntree <- ceiling(ntree / num.cores)
-    
-    # Run random forest on Linux or Macs using mclapply
-    rf.list <- if(Sys.info()[["sysname"]] %in% c("Linux", "Darwin")) {
-      parallel::mclapply(
-        1:num.cores, .clRF, params = params, mc.cores = num.cores
+  cl <- swfscMisc::setupClusters(num.cores)
+  rf <- tryCatch({
+    if(is.null(cl)) { # Don't parallelize if num.cores == 1
+      params$ntree <- ntree
+      .rfFuncDetector(params) 
+    } else { # Parallel random forest
+      # Create multicore rf function
+      .clRF <- function(i, params) .rfFuncDetector(params)
+      params$ntree <- ceiling(ntree / num.cores)
+      parallel::clusterEvalQ(cl, require(randomForest))
+      parallel::clusterExport(cl, "params", environment())
+      do.call(
+        randomForest::combine,
+        parallel::parLapplyLB(cl, 1:num.cores, .clRF, params = params)
       )
-      
-    # Run random forest using parLapply
-    } else {
-      tryCatch({
-        cl <- parallel::makeCluster(num.cores)
-        parallel::clusterEvalQ(cl, require(randomForest))
-        parallel::clusterExport(cl, "params", environment())
-        parallel::parLapply(cl, 1:num.cores, .clRF, params = params)
-      }, finally = parallel::stopCluster(cl))
     }
-    do.call(randomForest::combine, rf.list)
-  }
+  }, finally = if(!is.null(cl)) parallel::stopCluster(cl) else NULL)
   
   # Load banter_detector object
   banter_detector(

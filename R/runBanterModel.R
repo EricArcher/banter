@@ -27,9 +27,6 @@
 #' bant.mdl <- runBanterModel(bant.mdl, ntree = 1000, sampsize = 1)
 #' summary(bant.mdl)
 #' 
-#' @importFrom magrittr %>%
-#' @importFrom plyr .
-#' @importFrom rlang .data
 #' @export
 #' 
 runBanterModel <- function(x, ntree, sampsize = 1) {

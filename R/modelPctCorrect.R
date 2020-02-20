@@ -27,9 +27,6 @@
 #' bant.mdl <- runBanterModel(bant.mdl, ntree = 1000, sampsize = 1)
 #' modelPctCorrect(bant.mdl)
 #' 
-#' @importFrom magrittr %>%
-#' @importFrom rlang .data
-#' 
 #' @export
 #' 
 modelPctCorrect <- function(x) {

@@ -20,6 +20,7 @@ Imports:
   rfPermute,
   rlang,
   stats,
+  swfscMisc,
   tibble,
   tidyr
 Remotes:

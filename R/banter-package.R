@@ -8,6 +8,10 @@
 #'   Oswald, M. , Curtis, A. and Barlow, J. (2017), Acoustic classification 
 #'   of dolphins in the California Current using whistles, echolocation clicks,
 #'   and burst pulses. Marine Mammal Science 33:520-540. doi:10.1111/mms.12381
+#' @importFrom rlang .data
+#' @importFrom magrittr %>%
+#' @importFrom methods new
+#' @importFrom plyr .
 #' @keywords package
 NULL
 

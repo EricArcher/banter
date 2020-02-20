@@ -49,10 +49,6 @@
 #' test.pred <- predict(bant.mdl, test.data)
 #' test.pred
 #' 
-#' @importFrom magrittr %>%
-#' @importFrom plyr .
-#' @importFrom rlang .data
-#' 
 #' @exportMethod predict
 methods::setGeneric("predict")
 

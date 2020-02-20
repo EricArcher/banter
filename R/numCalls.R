@@ -32,10 +32,6 @@
 #' propCalls(bant.mdl, "species")
 #' propCalls(bant.mdl, "event")
 #' 
-#' @importFrom magrittr %>%
-#' @importFrom plyr .
-#' @importFrom rlang .data
-#' 
 #' @export
 #' 
 numCalls <- function(x, by = c("species", "event")) {

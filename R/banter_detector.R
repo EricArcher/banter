@@ -13,9 +13,6 @@
 #'
 #' @author Eric Archer \email{eric.archer@@noaa.gov}
 #' 
-#' @importFrom methods setClass setValidity setMethod new
-#' @importFrom randomForest randomForest
-#' 
 #' @keywords internal
 #' 
 banter_detector <- methods::setClass(
