@@ -97,7 +97,8 @@ Rankin, S., Archer, F., Keating, J. L., Oswald, J. N., Oswald, M., Curtis, A. an
 ### version 0.9.4 (devel)
 
 * Detector names and detector predictor column names submitted to `addBanterDetector()` are now first checked to make sure they are syntactically valid and unique by comparing them with the results from `make.names()`.
-* Detector names and detector predictor column names in `new.data` submitted to `predict()` are first checked to make sure all necessary detectors and columns in the classification model are present.
+* Detector names and detector predictor column names in `new.data` submitted to `predict()` are first checked to make sure at least one detector from model is present.
+* Detectors missing in `new.data` for `predict()` will automatically have all species detector probabilities and detector proportions set to 0.
 
 ### version 0.9.3 (on CRAN)
 

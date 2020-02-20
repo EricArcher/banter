@@ -26,5 +26,5 @@ Remotes:
   ericarcher/rfPermute
 Suggests: testthat
 License: GNU General Public License
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Encoding: UTF-8

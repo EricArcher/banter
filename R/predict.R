@@ -13,10 +13,16 @@
 #'   (see \code{\link{addBanterDetector}}).
 #' @param ... unused.
 #' 
+#' @note At least one detector in the model must be present in \code{new.data}. 
+#'   Any detectors in the training model that are absent will have all species 
+#'   proportions and the the detector propoprtion set to 0.
+#'   
 #' @return A list with the following elements: \describe{
 #'   \item{events}{the data frame used in the event model for predictions.}
 #'   \item{predict.df}{data.frame of predicted species and assignment 
 #'      probabilities for each event.}
+#'   \item{detector.freq}{data.frame giving the number of events available 
+#'      for each detector.}
 #' }
 #'   
 #' @author Eric Archer \email{eric.archer@@noaa.gov}
@@ -63,27 +69,29 @@ predict.banter_model <- function(object, new.data, ...) {
     )
   }
   
-  # Check that all necessary detectors are present in 'new.data'
-  missing.detectors <- setdiff(
-    names(object@detectors), 
-    names(new.data$detectors)
-  )
-  if(length(missing.detectors) > 0) {
-    stop(
-      "Can't predict with 'new.data', the following detectors are missing: ", 
-      paste(missing.detectors, collapse = ", "),
-      .call = FALSE
-    )
+  # Check that at least one detector is present in 'new.data'
+  if(!any(names(new.data$detectors) %in% names(object@detectors))) {
+    stop("Can't predict with 'new.data' because no detectors from model are present.", .call = FALSE)
   }
   
+  unique.events <- unique(new.data$events$event.id)
+      
   # Get number of calls in each detector for each event
-  detector.num <- lapply(names(new.data$detectors), function(d) {
-    new.data$events %>% 
-      dplyr::left_join(new.data$detectors[[d]], by = "event.id") %>% 
-      dplyr::group_by(.data$event.id) %>% 
-      dplyr::summarize(n = sum(!is.na(.data$call.id))) %>% 
-      dplyr::ungroup() %>% 
-      dplyr::mutate(detector = paste0("prop.", d))
+  detector.num <- lapply(names(object@detectors), function(d) {
+    if(d %in% names(new.data$detectors)) {
+      new.data$events %>% 
+        dplyr::left_join(new.data$detectors[[d]], by = "event.id") %>% 
+        dplyr::group_by(.data$event.id) %>% 
+        dplyr::summarize(n = sum(!is.na(.data$call.id))) %>% 
+        dplyr::ungroup() %>% 
+        dplyr::mutate(detector = paste0("prop.", d))
+    } else { # detector not present in new.data, proportion = 0
+      tibble::tibble(
+        event.id = unique.events,
+        n = 0,
+        detector = paste0("prop.", d)
+      )
+    }
   }) %>%
     dplyr::bind_rows()
   
@@ -98,16 +106,20 @@ predict.banter_model <- function(object, new.data, ...) {
   
   # Calculate mean votes for each event
   detector.votes <- sapply(names(object@detectors), function(d) {
-    predict(
-      object@detectors[[d]]@model, 
-      new.data$detectors[[d]], 
-      type = "prob"
-    ) %>% 
-      as.data.frame() %>% 
-      cbind(
-        event.id = new.data$detectors[[d]]$event.id, 
-        stringsAsFactors = FALSE
-      )
+    if(d %in% names(new.data$detectors)) { # detector present in model
+      predict(
+        object@detectors[[d]]@model, 
+        new.data$detectors[[d]], 
+        type = "prob"
+      ) %>% 
+        as.data.frame() %>% 
+        dplyr::bind_cols(event.id = new.data$detectors[[d]]$event.id)
+    } else { # detector not present in model - fill with 0's
+      spp <- colnames(object@detectors[[d]]@model$votes)
+      vote.0 <- matrix(0, nrow = length(unique.events), ncol = length(spp))
+      colnames(vote.0) <- spp
+      dplyr::bind_cols(as.data.frame(vote.0), event.id = unique.events)
+    }
   }, simplify = FALSE) %>% 
     .meanVotes()
   
@@ -147,7 +159,13 @@ predict.banter_model <- function(object, new.data, ...) {
       predicted = as.character(predict(object@model, df, type = "response")),
       predict(object@model, df, type = "prob"),
       stringsAsFactors = FALSE
-    )
+    ),
+    detector.freq = detector.num %>% 
+      dplyr::mutate(detector = gsub("prop.", "", .data$detector)) %>% 
+      dplyr::group_by(.data$detector) %>% 
+      dplyr::summarize(num.events = sum(.data$n > 0)) %>% 
+      dplyr::ungroup() %>% 
+      as.data.frame(stringsAsFactors = FALSE)
   )
 }
 

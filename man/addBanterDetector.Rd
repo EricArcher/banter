@@ -5,8 +5,15 @@
 \alias{removeBanterDetector}
 \title{Add a BANTER Detector Model}
 \usage{
-addBanterDetector(x, data, name, ntree, sampsize = 1,
-  importance = FALSE, num.cores = NULL)
+addBanterDetector(
+  x,
+  data,
+  name,
+  ntree,
+  sampsize = 1,
+  importance = FALSE,
+  num.cores = NULL
+)
 
 removeBanterDetector(x, name)
 }
