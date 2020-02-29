@@ -15,7 +15,10 @@
 #' 
 #' @note At least one detector in the model must be present in \code{new.data}. 
 #'   Any detectors in the training model that are absent will have all species 
-#'   proportions and the the detector propoprtion set to 0.
+#'   proportions and the the detector propoprtion set to 0. If a column called 
+#'   \code{species} is in \code{new.data}, columns for the original species 
+#'   designation and if that matches predicted (\code{correct}) will be added 
+#'   to the \code{predict.df} data.frame of the output.
 #'   
 #' @return A list with the following elements: \describe{
 #'   \item{events}{the data frame used in the event model for predictions.}
@@ -23,6 +26,8 @@
 #'      probabilities for each event.}
 #'   \item{detector.freq}{data.frame giving the number of events available 
 #'      for each detector.}
+#'   \item{validation.matrix}{if \code{species} is a column in \code{new.data},
+#'      a table giving the classification rate for each event}
 #' }
 #'   
 #' @author Eric Archer \email{eric.archer@@noaa.gov}
@@ -147,8 +152,8 @@ predict.banter_model <- function(object, new.data, ...) {
   
   df <- df %>% 
     dplyr::filter(stats::complete.cases(.))
-  
-  list(
+
+  result <- list(
     events = df,
     predict.df = cbind(
       data.frame(event.id = df$event.id, stringsAsFactors = FALSE),
@@ -163,6 +168,25 @@ predict.banter_model <- function(object, new.data, ...) {
       dplyr::ungroup() %>% 
       as.data.frame(stringsAsFactors = FALSE)
   )
+  
+  if("species" %in% colnames(df)) {
+    result$predict.df <- dplyr::mutate(
+      result$predict.df, 
+      original = as.character(df$species),
+      correct = .data$original == .data$predicted
+    )
+    conf.df <- result$predict.df
+    conf.df$predicted <- factor(
+      conf.df$predicted, 
+      levels = object@model$classes
+    )
+    result$validation.matrix <- table(
+      original = result$predict.df$original,
+      predicted = result$predict.df$predicted
+    )
+  }
+  
+  result
 }
 
 #' @name predict

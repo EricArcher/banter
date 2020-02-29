@@ -33,6 +33,8 @@ A list with the following elements: \describe{
      probabilities for each event.}
   \item{detector.freq}{data.frame giving the number of events available 
      for each detector.}
+  \item{validation.matrix}{if \code{species} is a column in \code{new.data},
+     a table giving the classification rate for each event}
 }
 }
 \description{
@@ -41,7 +43,10 @@ Predict species of events for novel data from a BANTER model.
 \note{
 At least one detector in the model must be present in \code{new.data}. 
   Any detectors in the training model that are absent will have all species 
-  proportions and the the detector propoprtion set to 0.
+  proportions and the the detector propoprtion set to 0. If a column called 
+  \code{species} is in \code{new.data}, columns for the original species 
+  designation and if that matches predicted (\code{correct}) will be added 
+  to the \code{predict.df} data.frame of the output.
 }
 \examples{
 data(train.data)
