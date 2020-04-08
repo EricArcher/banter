@@ -100,6 +100,7 @@ Rankin, S., Archer, F., Keating, J. L., Oswald, J. N., Oswald, M., Curtis, A. an
 * Detector names and detector predictor column names in `new.data` submitted to `predict()` are first checked to make sure at least one detector from model is present.
 * Detectors missing in `new.data` for `predict()` will automatically have all species detector probabilities and detector proportions set to 0.
 * Added validation option to `predict()` if `species` column exists in `new.data`
+* Default value for num.cores has been set to 1.
 
 ### version 0.9.3 (on CRAN)
 

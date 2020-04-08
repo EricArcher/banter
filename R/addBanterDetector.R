@@ -11,14 +11,15 @@
 #'   then it will be used to select this fraction of the smallest sample size.
 #' @param importance retain importance scores in model? Defaults to 
 #'   \code{FALSE} and will be ignored if \code{num.cores > 1}.
-#' @param num.cores number of cores to use for Random Forest model.
+#' @param num.cores number of cores to use for Random Forest model. Set to 
+#'   \code{NULL} to use the maximum number detected on your system - 1.
 #' 
 #' @return a \code{\link{banter_model}} object with the detector model added or 
 #'   removed.
 #' 
 #' @author Eric Archer \email{eric.archer@@noaa.gov}
 #' 
-#' @references Rankin, S. , Archer, F. , Keating, J. L., Oswald, J. N., 
+#' @references Rankin, S., Archer, F., Keating, J. L., Oswald, J. N., 
 #'   Oswald, M. , Curtis, A. and Barlow, J. (2017), Acoustic classification 
 #'   of dolphins in the California Current using whistles, echolocation clicks, 
 #'   and burst pulses. Marine Mammal Science 33:520-540. doi:10.1111/mms.12381
@@ -43,7 +44,7 @@
 #' @export
 #' 
 addBanterDetector <- function(x, data, name, ntree, sampsize = 1, 
-                              importance = FALSE, num.cores = NULL) {
+                              importance = FALSE, num.cores = 1) {
   # Check that detectors is a list
   if(is.null(x@detectors)) x@detectors <- list()
   
@@ -99,7 +100,7 @@ removeBanterDetector <- function(x, name) {
 #' 
 .runDetectorModel <- function(x, data, name, ntree, 
                               sampsize = 1, importance = FALSE, 
-                              num.cores = NULL) {
+                              num.cores = 1) {
   
   # Check that "event.id" and "call.id" exist
   if(!all(c("event.id", "call.id") %in% colnames(data))) {

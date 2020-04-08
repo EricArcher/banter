@@ -12,7 +12,7 @@ addBanterDetector(
   ntree,
   sampsize = 1,
   importance = FALSE,
-  num.cores = NULL
+  num.cores = 1
 )
 
 removeBanterDetector(x, name)
@@ -33,7 +33,8 @@ then it will be used to select this fraction of the smallest sample size.}
 \item{importance}{retain importance scores in model? Defaults to 
 \code{FALSE} and will be ignored if \code{num.cores > 1}.}
 
-\item{num.cores}{number of cores to use for Random Forest model.}
+\item{num.cores}{number of cores to use for Random Forest model. Set to 
+\code{NULL} to use the maximum number detected on your system - 1.}
 }
 \value{
 a \code{\link{banter_model}} object with the detector model added or 
