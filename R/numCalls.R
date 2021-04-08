@@ -40,13 +40,12 @@ numCalls <- function(x, by = c("species", "event")) {
   lapply(names(x@detectors), function(d) {
     x@data %>% 
       dplyr::left_join(x@detectors[[d]]@ids, by = "event.id") %>% 
-      dplyr::group_by(.dots = by) %>% 
-      dplyr::summarize(n = sum(!is.na(.data$call.id))) %>% 
-      dplyr::ungroup() %>% 
+      dplyr::group_by(dplyr::across(by)) %>% 
+      dplyr::summarize(n = sum(!is.na(.data$call.id)), .groups = "drop") %>% 
       dplyr::mutate(detector = paste0("num.", d))
   }) %>%
     dplyr::bind_rows() %>% 
-    tidyr::spread("detector", "n") %>% 
+    tidyr::pivot_wider(names_from = "detector", values_from = "n") %>% 
     replace(is.na(.), 0) %>% 
     as.data.frame()
 }
@@ -58,12 +57,16 @@ propCalls <- function(x, by = c("species", "event")) {
   df <- numCalls(x, by)
   by <- colnames(df)[1]
   df %>% 
-    tidyr::gather("detector", "n", -by) %>% 
-    dplyr::group_by(.dots = by) %>%
+    tidyr::pivot_longer(
+      -dplyr::all_of(by),
+      names_to = "detector", 
+      values_to = "n"
+    ) %>% 
+    dplyr::group_by(dplyr::across(by)) %>%
     dplyr::mutate(prop = .data$n / sum(.data$n, na.rm = TRUE)) %>% 
     dplyr::ungroup() %>% 
     dplyr::select(-.data$n) %>% 
     dplyr::mutate(detector = gsub("num.", "prop.", .data$detector)) %>% 
-    tidyr::spread("detector", "prop") %>% 
+    tidyr::pivot_wider(names_from = "detector", values_from = "prop") %>% 
     as.data.frame()
 }

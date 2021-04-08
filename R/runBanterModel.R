@@ -67,7 +67,11 @@ runBanterModel <- function(x, ntree, sampsize = 1) {
       df <- df %>% 
         dplyr::left_join(
           numCalls(x, "event") %>% 
-            tidyr::gather("detector", "num", -.data$event.id) %>% 
+            tidyr::pivot_longer(
+              -.data$event.id, 
+              names_to = "detector", 
+              values_to = "num"
+            ) %>% 
             dplyr::left_join(
               dplyr::select(df, "event.id", "duration"), 
               by = "event.id"
@@ -77,7 +81,7 @@ runBanterModel <- function(x, ntree, sampsize = 1) {
               num = .data$num / .data$duration
             ) %>% 
             dplyr::select(-.data$duration) %>% 
-            tidyr::spread("detector", "num"),
+            tidyr::pivot_wider(names_from = "detector", values_from = "num"),
           by = "event.id"
         )
     }

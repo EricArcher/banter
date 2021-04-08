@@ -23,7 +23,7 @@ devtools::install_github('ericarcher/banter')
 
 ### Quick Tutorial
 
-The BANTER model is initialized with a data.frame of events. There is one row per event and it must have a column called `event.id` which is a unique id for each event, and a column called `species` which assigns each event to a given species. Every other column in the data.frame will be used as a predictor variable for the events.  
+The BANTER (Bio-Acoustic eveNT classifiER) model is initialized with a data.frame of events. There is one row per event and it must have a column called `event.id` which is a unique id for each event, and a column called `species` which assigns each event to a given species. Every other column in the data.frame will be used as a predictor variable for the events.  
 In the package, an example data.frame is in the `train.data` example data list as the `$events` element.
 ```r
 data(train.data)

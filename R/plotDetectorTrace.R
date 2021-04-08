@@ -46,8 +46,7 @@ plotDetectorTrace <- function(x, detector = NULL) {
   traces$bottom <- "Trees"
   traces$left = "Error"
   
-  p <- do.call(gridExtra::grid.arrange, traces)
-  print(p)
+  do.call(gridExtra::grid.arrange, traces)
   
   invisible(NULL)
 }

@@ -83,8 +83,7 @@ predict.banter_model <- function(object, new.data, ...) {
       new.data$events %>% 
         dplyr::left_join(new.data$detectors[[d]], by = "event.id") %>% 
         dplyr::group_by(.data$event.id) %>% 
-        dplyr::summarize(n = sum(!is.na(.data$call.id))) %>% 
-        dplyr::ungroup() %>% 
+        dplyr::summarize(n = sum(!is.na(.data$call.id)), .groups = "drop") %>% 
         dplyr::mutate(detector = paste0("prop.", d))
     } else { # detector not present in new.data, proportion = 0
       tibble::tibble(
@@ -101,7 +100,7 @@ predict.banter_model <- function(object, new.data, ...) {
     dplyr::group_by(.data$event.id) %>% 
     dplyr::mutate(n = .data$n / sum(.data$n, na.rm = TRUE)) %>% 
     dplyr::ungroup() %>% 
-    tidyr::spread("detector", "n") %>% 
+    tidyr::pivot_wider(names_from = "detector", values_from = "n") %>% 
     replace(is.na(.), 0) %>% 
     as.data.frame()
   
@@ -144,7 +143,7 @@ predict.banter_model <- function(object, new.data, ...) {
                 n = .data$n / .data$duration
               ) %>% 
               dplyr::select(-.data$duration) %>% 
-              tidyr::spread("detector", "n"),
+              tidyr::pivot_wider(names_from = "detector", values_from = "n"),
             by = "event.id"
           )
       }

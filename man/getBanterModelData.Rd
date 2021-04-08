@@ -10,7 +10,7 @@ getBanterModelData(x)
 \item{x}{a \code{\link{banter_model}} object.}
 }
 \value{
-a \code{\link{randomForest}} model object.
+the event data frame used to build the input model \code{x}.
 }
 \description{
 Extract BANTER event data used for the Random Forest model.

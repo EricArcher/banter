@@ -3,7 +3,7 @@
 #' 
 #' @param x a \code{\link{banter_model}} object.
 #' 
-#' @return a \code{\link{randomForest}} model object.
+#' @return the event data frame used to build the input model \code{x}.
 #' 
 #' @author Eric Archer \email{eric.archer@@noaa.gov}
 #' 
