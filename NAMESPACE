@@ -3,6 +3,7 @@
 S3method(predict,banter_model)
 S3method(summary,banter_model)
 export(addBanterDetector)
+export(banterGuide)
 export(getBanterModel)
 export(getBanterModelData)
 export(getDetectorNames)

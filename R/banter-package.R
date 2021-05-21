@@ -15,6 +15,10 @@
 #' @keywords package
 NULL
 
+.onAttach <- function(libname, pkgname) {
+  packageStartupMessage("Welcome to banter. Run `banterGuide()` for a tutorial.")
+}
+
 setOldClass(c("randomForest", "randomForest.formula", "rfPermute", "ranger"))
 setClassUnion("classifier", c("randomForest", "randomForest.formula", "rfPermute", "ranger", "NULL"))
 setClassUnion("listOrNull", c("list", "NULL"))

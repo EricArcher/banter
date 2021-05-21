@@ -2,7 +2,8 @@
 [![CRAN last day downloads](http://cranlogs.r-pkg.org/badges/last-day/banter?color=red)](https://cran.r-project.org/package=banter)
 [![CRAN last week downloads](http://cranlogs.r-pkg.org/badges/last-week/banter?color=red)](https://cran.r-project.org/package=banter)
 [![CRAN last month downloads](http://cranlogs.r-pkg.org/badges/banter?color=red)](https://cran.r-project.org/package=banter)
-[![CRAN total downloads](http://cranlogs.r-pkg.org/badges/grand-total/banter?color=red)](https://cran.r-project.org/package=banter)  
+[![CRAN total downloads](http://cranlogs.r-pkg.org/badges/grand-total/banter?color=red)](https://cran.r-project.org/package=banter)
+[![R-CMD-check](https://github.com/EricArcher/banter/workflows/R-CMD-check/badge.svg)](https://github.com/EricArcher/banter/actions)
 
 # banter
 
@@ -15,13 +16,15 @@
 To install the latest version from GitHub:
 
 ```r
-# make sure you have Rtools installed
+# make sure you have devtools installed
 if(!require('devtools')) install.packages('devtools')
+
 # install package from GitHub
 devtools::install_github('ericarcher/banter')
 ```
 
 ### Quick Tutorial
+(Run the `banterGuide()` function in R for a more complete guide.)
 
 The BANTER (Bio-Acoustic eveNT classifiER) model is initialized with a data.frame of events. There is one row per event and it must have a column called `event.id` which is a unique id for each event, and a column called `species` which assigns each event to a given species. Every other column in the data.frame will be used as a predictor variable for the events.  
 In the package, an example data.frame is in the `train.data` example data list as the `$events` element.
@@ -101,6 +104,7 @@ Rankin, S., Archer, F., Keating, J. L., Oswald, J. N., Oswald, M., Curtis, A. an
 * Detectors missing in `new.data` for `predict()` will automatically have all species detector probabilities and detector proportions set to 0.
 * Added validation option to `predict()` if `species` column exists in `new.data`
 * Default value for num.cores has been set to 1.
+* Added `banterGuide()`
 
 ### version 0.9.3 (on CRAN)
 

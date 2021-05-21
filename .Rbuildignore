@@ -7,8 +7,7 @@
 ^NEWS\.md$
 tar.gz$
 .gitignore
-^\.travis\.yml$
-^appveyor\.yml$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 .DS_Store
+^\.github$

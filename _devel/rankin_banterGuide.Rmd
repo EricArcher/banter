@@ -29,30 +29,32 @@ Passive acoustic monitoring is an effective means of monitoring marine mammals; 
 
 A _BANTER_ acoustic classifier is written in open source software, R, and requires minimal human intervention, providing more consistent results with fewer biases and errors. _BANTER_ also produces a classification error rate which is a critical component when there is no independent verification of species identity. _BANTER_ has been developed in a general manner such that it can be applied to sounds from any source (anthropogenic, terrestrial animals, marine animals). 
 
-_BANTER_ is a flexible, hierarchical supervised machine learning algorithm for classifying acoustic events  consisting of two stages, each consisting of a set of Random Forest classifiers (Rankin et al. 2017). The first stage is the call classification, where individual classification models are built for any number of call types. The second stage applies the results of the first stage call classifiers and adds any event-level variables to create an event-level classification model. _BANTER_ classifiers (call classifiers and event classifiers) are based on the Random Forest supervised learning algorithm. 
+_BANTER_ is a flexible, hierarchical supervised machine learning algorithm for classifying acoustic events  consisting of two stages, each consisting of a set of Random Forest classifiers (Rankin et al. 2017). The first stage is the Detector Model, where individual classification models are built for any number of call types (detection types). The second stage applies the results of the first stage call classifiers and adds any event-level variables to create an Event Model that classifies the *event*. _BANTER_ classifiers (Detector and Event Models) are based on the Random Forest supervised learning algorithm. 
 
-Random Forest creates a large number of decision trees, each trained on a different subset of the data, aggregating predictions across all trees (the forest). For each decision tree in the forest, some portion of the samples (referred to as the Out-Of-Bag or OOB dataset). The model automatically evaluates its own performance by running each of the samples in the OOB dataset through the forest and comparing its predicted group classification to the a-priori designated group. Thus, there is no need for separate cross-validation or another test to get an unbiased estimate of the error. Random Forest can handle a large number of input variables which can be discrete or categorical, and is not prone to issues related to correlated variables. The random subsetting of samples and variables, and use of OOB data prevents overfitting of the model. 
+Random Forest creates a large number of decision trees, each trained on a different subset of the data, aggregating predictions across all trees (the forest). For each decision tree in the forest, some portion of the samples will be left out during the construction of the decision tree (referred to as the Out-Of-Bag or OOB dataset). The model automatically evaluates its own performance by running each of the samples in the OOB dataset through the forest and comparing its predicted group classification to the a-priori designated group. Thus, there is no need for separate cross-validation or another test to get an unbiased estimate of the error. Random Forest can handle a large number of input variables which can be discrete or categorical, and is not prone to issues related to correlated variables. The random subsetting of samples and variables, and use of OOB data prevents overfitting of the model. 
 
 Here we present a user guide for the _BANTER_ acoustic classification algorithm, using the built-in dataset provided in the _BANTER_ package. 
 
 ## 2. Methods
 At a minimum, _BANTER_ requires data to train a classifier which can then be applied to predict species identity on a novel dataset that has the same predictors. Here we will use some of the data provided within the _BANTER_ R package for testing. 
 
-Once you have training data, you first need to initialize a _BANTER_ model. The _BANTER_ model can be developed in stages (first the call classification model, then the event model) or as a single unit. We suggest running these separately so that each model can be modified to improve performance and ensure stability. Once the models are optimized, we present options for summarizing and interpreting your results. 
+Once you have training data, you first need to initialize a _BANTER_ model. The _BANTER_ model can be developed in stages (first the Detector Model, then the Event Model) or as a single unit. We suggest running these separately so that each model can be modified to improve performance and ensure stability. Once the models are optimized, we present options for summarizing and interpreting your results. 
 
 This guide was developed based on _BANTER_ v0.9.3.
 
 ### 2.1 Data Requirements and Limitations
-_BANTER_ has flexible data requirements which allow it to be applied to a wide array of training data. _BANTER_ consists of two stages: (1) call classifier and (2) event classifier. At its core, _BANTER_ is an *event classifier*: it classifies a group of sounds observed at the same time. Multiple call type detectors can be considered; if your species of interest only produces a single call type, we have found that minor changes to the detector settings can lead to differences between species that can be informative (see Rankin et al. 2017). 
+_BANTER_ has flexible data requirements which allow it to be applied to a wide array of training data. _BANTER_ consists of two stages: (1) Detector Model and (2) Event Model. At its core, _BANTER_ is an *event classifier*: it classifies a group of sounds observed at the same time. Multiple call type detectors can be considered; if your species of interest only produces a single call type, we have found that minor changes to the detector settings can lead to differences between species that can be informative (see Rankin et al. 2017). 
 
 _BANTER_ accepts data in a generic R data frame format. There can be one or more detector data frame and only one event data frame.
 
-The event data frame must have one row per event. The columns must be: 
-- **event.id** a unique character or number identifying each event.
-- **species** a character or number that assigns each event to a given species. 
-- All other columns will be used as predictor variables for the event.
+The event data frame must have one row per event. The columns must be:  
+
+  -  **event.id** a unique character or number identifying each event.
+  -  **species** a character or number that assigns each event to a given species.
+  -  All other columns will be used as predictor variables for the event.
 
 A detector data frame must have one row per call. The columns must be:
+
 - **event.id** a unique character or number identifying each event. This is used to connect the call to the appropriate event in the event data frame described above.  
 - **call.id** unique character or number for this call in this detector.
 - All other columns will be used as predictor variables for the call. 
@@ -108,7 +110,7 @@ summary(bant.mdl)
 
 
 ### 2.2.2 Adding Detectors
-The `addBANTERDetector()` function adds Detectors to your model, where the detector information is tagged by Event. If the detector data is a single data frame, then the name of the detector (for example, "bp" is the "bp" detector) needs to be provided. If detector data is a named list of data frames, the name does not need to be provided (can be NULL). The 'addBanterDetector()' function can be called repeatedly to add additional detectors or detectors can be added all at once. If your models require different parameters for different detectors, you may want to model them separately. Here we will lump all detectors into a single Detector Model. 
+The `addBANTERDetector()` function adds Detectors to your model, where the detector information is tagged by Event. If the detector data is a single data frame, then the name of the detector (for example, "bp" is the "bp" detector) needs to be provided. If detector data is a named list of data frames, the name does not need to be provided (can be NULL). The `addBanterDetector()` function can be called repeatedly to add additional detectors or detectors can be added all at once. If your models require different parameters for different detectors, you may want to model them separately. Here we will lump all detectors into a single Detector Model. 
 
 ```{r, include=TRUE}
 # Add BANTER Detectors and Run Detector Models
@@ -132,7 +134,7 @@ plotDetectorTrace(bant.mdl)
 
 Once you are satisfied with the Detector Model, you are ready to run your final _BANTER_ model. This model will include output from the Detector Models, as well as any event-level variables you may have.  
 
-This model also uses the *ntree* and *sampsize* parameters, which can be modified to improve performance and model stability. We have purposefully set these values to provide poor results. The next step will be to tune this model to improve performance  (see **Tune BANTER Model**).
+This model also uses the *ntree* and *sampsize* parameters, which can be modified to improve performance and model stability. We have purposefully set these values to provide poor results. The next step will be to tune this model to improve performance  (see **Tune _BANTER_ Model**).
 ```{r, include=TRUE}
 bant.mdl <- runBanterModel(bant.mdl, ntree = 10, sampsize = 1)
 ```
@@ -158,7 +160,7 @@ Importance in Random Forest is a measure of the predictive power of a variable. 
 * **num.cores = number of cores to use for Random Forest model**
 `num.cores` refers to the number of cores used by your computer in processing data. The default is `num.cores = 1`, but it can be set to a maximum of 1 less than the number of cores available on your computer. If `num.cores` is set to >1, the importance variables cannot be saved. While there may be value in increasing the `num.cores` during preliminary processing (to 'tune' the model), we recommend reducing `num.cores = 1` for the final processing in order to allow for `importance = TRUE`.
 
-It is important that your _BANTER_ model is stable: the results should not change when you rerun the model. We will explain how to tune the model using the case of the poor performing Event _BANTER_ Model we created above. These same methods can be applied to the Detector Models, to ensure that your stage 1 models are stable (in this small case they are reasonably stable).
+It is important that your _BANTER_ model is stable: the results should not change when you rerun the model. We will explain how to tune the model using the case of the poor performing _BANTER_ Event Model we created above. These same methods can be applied to the Detector Models, to ensure that your stage 1 models are stable (in this small case they are reasonably stable).
 
 The first tool we have is the Error Trace plot (top plot after you run the summary function, below), which shows the error (y-axis) as we average across an increasing number of trees (x-axis). The goal is to have a stable Error Trace (flat lines). The second tool we have is the count of the percentage of trees where a samples was 'inbag'. You can get these plots by applying the summary function to your _BANTER_ model after the Event model has been run.
 ```{r, include=TRUE}
@@ -235,12 +237,12 @@ By default, `summary()` reports the 95% confidence levels of the percent correct
 # Confusion Matrix
 confusionMatrix(bant.rf, conf.level = 0.75)
 ```
-The `confusionMatrix()` function also has a `threshold` argument that provides the binomial probability that the true classification probability (given infinite data) is greater than or equaly to this value. For example, if we want to know what is probability that the true classification probability for each species is >= 0.80, we set `threshold = 0.8`:
+The `confusionMatrix()` function also has a `threshold` argument that provides the binomial probability that the true classification probability (given infinite data) is greater than or equal to this value. For example, if we want to know what is probability that the true classification probability for each species is >= 0.80, we set `threshold = 0.8`:
 ```{r, include=TRUE}
 # Confusion Matrix with medium threshold
 confusionMatrix(bant.rf, threshold = 0.8)
 ```
-This shows that S.coeruleoalba has a high probability of having a true classification score above 0.8 (Pr.gt_0.8 = 94.5). Conversely, the probability that the classification rate for D.delphis is above 0.8 is very low (Pr.gt_0.8 = 0.1).  
+This shows that _D. capensis_ has a high probability of having a true classification score above 0.8 (Pr.gt_0.8 = 79.0). Conversely, the probability that the classification rate for _D.delphis_ is above 0.8 is very low (Pr.gt_0.8 = 6.8).  
 
 And alternative view of the confusion matrix comes in the form of a heat map.
 ```{r, include=TRUE}
@@ -339,35 +341,10 @@ bant.4imp <- bant.imp[order(bant.imp$MeanDecreaseAccuracy, decreasing = TRUE), ]
 # Look at the predictors to identify your next steps
 bant.4imp
 ```
-The predictors that showed the greatest importance came from the whistle (dw) detector and the burst pulse (bp) detectors.   
+The predictors that showed the greatest importance came from the whistle (dw) detector and the burst pulse (bp) detectors. We can plot the distribution of the predictor variables on these classes (in this case, a violin plot for each of these four most important variables). 
 
 ```{r}
 plotImpVarDist(bant.rf, bantData.df, "species", max.vars = 4)
-```
-
-We will now examine these detectors to identify the variables that had the greatest predictive power. [**NOTE ERIC!!! Perhaps you will find this stupid or clumsy- I am curious your thoughts/advice** - it doesn't quite work this way. Predictors that are important in a detector model may not have any relationship to importance of classification in the event model because the event model predictors are the species classification distributions for the event, not the detector predictors] 
-```{r, include=TRUE}
-dw.imp <- data.frame(importance(bant.dw.rf))#create a data.frame of the dw detector importance data
-dw.4imp <- dw.imp[order(dw.imp$MeanDecreaseAccuracy, decreasing=TRUE),][1:4,]#order so top 4 rows are most important
-dw.4impVars <- rownames(dw.4imp)#These are the 4 most important variables in the dw detector
-
-event.speciesID <- data.frame(train.data$events[1:2])#create dataframe for event.id and species
-train.dw <- data.frame(train.data$detectors$dw) #create a dataframe of the dw detector training data
-train.dw <- merge(event.speciesID, train.dw, by="event.id")#add species ID as a column to the dw detector data
-```
-
-Create violin plots for these variables, label the mis-classified events, and determine if they are outliers.
-```{r, include=TRUE}
-aesY<-dw.4impVars[4]#select the important detector variable you would like to plot
-misclass_predictorPlot<-ggplot(train.dw, aes(x=species, y=aesY))+ 
-  geom_violin(trim=FALSE)+
-  geom_text(
-    data=subset(train.dw, event.id %in% misclass$case.id),
-    aes(species, DURATION, label=event.id),
-    check_overlap=TRUE
-  )
-
-
 ```
 
 
@@ -378,7 +355,7 @@ To run a prediction model, you must have your _BANTER_ model, and new data. Here
 
 
 **Predict**
-The `predict()` function will apply your _BANTER_ model to novel data and provide you with a data frame with the events used in the event model for predictions, and a data frame of predicted species and assignment probabilities for each event.
+The `predict()` function will apply your _BANTER_ model to novel data and provide you with a data frame with the events used in the Event Model for predictions, and a data frame of predicted species and assignment probabilities for each event.
 ```{r, include=TRUE}
 data(test.data)
 predict(bant.mdl, test.data)
@@ -390,7 +367,7 @@ _BANTER_ has been developed in a general manner such that it can be applied to a
 
 ## Acknowledgements
 
-Many thanks to our original co-authors for their help in developing the original _BANTER_ trial. Funding for development of _BANTER_ was provided by NOAA's Advanced Sampling Technology Working Group. 
+Many thanks to our original co-authors for their help in developing the original _BANTER_ trial. Thoughtful reviews were provided by Anne Simonis and Marie Zahn. Funding for development of _BANTER_ was provided by NOAA's Advanced Sampling Technology Working Group. 
 
 ## References
 Rankin, S., Archer, F., Keating, J. L., Oswald, J. N., Oswald, M., Curtis, A. and Barlow, J. (2017) Acoustic classification of dolphins in the California Current using whistles, echolocation clicks, and burst pulses. Mar Mam Sci, 33: 520-540.<doi:10.1111/mms.12381>
