@@ -16,7 +16,7 @@
 NULL
 
 .onAttach <- function(libname, pkgname) {
-  packageStartupMessage("Welcome to banter. Run `banterGuide()` for a tutorial.")
+  packageStartupMessage("Welcome to banter. See `banterGuide()` for a tutorial.")
 }
 
 setOldClass(c("randomForest", "randomForest.formula", "rfPermute", "ranger"))
