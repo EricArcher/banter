@@ -27,7 +27,6 @@
 #' bant.mdl <- runBanterModel(bant.mdl, ntree = 1000, sampsize = 1)
 #' 
 #' # extract the event randomForest model
-#' library(randomForest)
 #' event.rf <- getBanterModel(bant.mdl)
 #' event.rf
 #' 

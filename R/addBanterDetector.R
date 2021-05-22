@@ -184,7 +184,6 @@ removeBanterDetector <- function(x, name) {
 
 #' Detector randomForest function
 #' @rdname internals
-#' @importFrom randomForest randomForest
 #' @keywords internal
 #' 
 .rfFuncDetector <- function(params) {
