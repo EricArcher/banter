@@ -35,7 +35,7 @@ Rankin, S. , Archer, F. , Keating, J. L., Oswald, J. N.,
   and burst pulses. Marine Mammal Science 33:520-540. doi:10.1111/mms.12381
 }
 \seealso{
-\code{\link[rfPermute]{plotRFtrace}}
+\code{\link[rfPermute]{plotTrace}}
 }
 \author{
 Eric Archer \email{eric.archer@noaa.gov}

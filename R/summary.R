@@ -62,10 +62,10 @@ summary.banter_model <- function(object, model = "event", n = 0.1, bins = 20, ..
       observed = round(summary(1 - (rf$oob.times / rf$ntree)), 3)
     ))
     cat("\nConfusion matrix:\n")
-    print(round(rfPermute::confusionMatrix(rf), 2))
+    print(rfPermute::confusionMatrix(rf))
     
     gridExtra::grid.arrange(
-      rfPermute::plotRFtrace(rf, plot = FALSE) + 
+      rfPermute::plotTrace(rf, plot = FALSE) + 
         ggplot2::ylim(c(0, 1)),
       rfPermute::plotInbag(rf, sampsize = sampsize, bins = bins, plot = FALSE),
       nrow = 2

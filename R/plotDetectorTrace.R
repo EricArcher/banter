@@ -5,7 +5,7 @@
 #' @param detector names of models to plot. If set to \code{NULL}, traces for all
 #'   models will be shown.
 #' 
-#' @seealso \code{\link[rfPermute]{plotRFtrace}}
+#' @seealso \code{\link[rfPermute]{plotTrace}}
 #'
 #' @author Eric Archer \email{eric.archer@@noaa.gov}
 #' 
@@ -36,7 +36,7 @@ plotDetectorTrace <- function(x, detector = NULL) {
   }
   
   traces <- lapply(detector, function(d) {
-    tr <- rfPermute::plotRFtrace(getBanterModel(x, d), FALSE)
+    tr <- rfPermute::plotTrace(getBanterModel(x, d), FALSE)
     tr + 
       ggplot2::ylim(c(0, 1)) +
       ggplot2::ggtitle(d) +

@@ -8,21 +8,22 @@ Authors@R: c(
   EA = person("Eric", "Archer", email = "eric.archer@noaa.gov", role = c("aut", "cre")),
   TS = person("Taiki", "Sakai", email = "taiki.sakai@noaa.gov", role = c("aut")))
 Depends:
+  R (>= 4.1.0),
   magrittr
 Imports:
-  dplyr,
-  ggplot2,
-  gridExtra,
+  dplyr (>= 1.0.6),
+  ggplot2 (>= 3.3.3),
+  gridExtra (>= 2.3),
   methods,
   parallel,
   plyr,
-  randomForest,
-  rfPermute,
+  randomForest (>= 4.6),
+  rfPermute (>= 2.5),
   rlang,
   stats,
-  swfscMisc,
-  tibble,
-  tidyr
+  swfscMisc (>= 1.5),
+  tibble (>= 3.1.2),
+  tidyr (>= 1.1.1)
 Remotes:
   ericarcher/rfPermute
 Suggests: testthat
