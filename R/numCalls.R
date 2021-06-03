@@ -1,6 +1,7 @@
 #' @name numCalls
 #' @title Number and Proportion of Calls
-#' @description Number and proportion of calls in BANTER detector models
+#' @description Return the number and proportion of calls in BANTER detector 
+#'   models.
 #' 
 #' @param x a \code{\link{banter_model}} object.
 #' @param by return summary by \code{"species"} or \code{"event"}.

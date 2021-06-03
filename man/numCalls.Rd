@@ -15,7 +15,8 @@ propCalls(x, by = c("species", "event"))
 \item{by}{return summary by \code{"species"} or \code{"event"}.}
 }
 \description{
-Number and proportion of calls in BANTER detector models
+Return the number and proportion of calls in BANTER detector 
+  models.
 }
 \examples{
 data(train.data)

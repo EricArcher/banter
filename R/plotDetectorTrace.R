@@ -1,9 +1,10 @@
 #' @title Plot BANTER Detector Traces
-#' @description Plot traces of OOB error rates for detector Random Forest models
+#' @description Plot traces of OOB error rates for detector Random Forest 
+#'   models.
 #' 
 #' @param x a \code{\link{banter_model}} object.
-#' @param detector names of models to plot. If set to \code{NULL}, traces for all
-#'   models will be shown.
+#' @param detector names of models to plot. If set to \code{NULL}, traces for 
+#'   all models will be shown.
 #' 
 #' @seealso \code{\link[rfPermute]{plotTrace}}
 #'

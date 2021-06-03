@@ -16,7 +16,7 @@ to summarize the event-level model. Can also be name of a detector.}
 a data.frame giving the number of events available for each species.
 }
 \description{
-Number of events in BANTER model by species.
+Return the number of events in a BANTER model by species.
 }
 \examples{
 data(train.data)

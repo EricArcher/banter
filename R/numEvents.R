@@ -1,5 +1,5 @@
 #' @title Number of Events
-#' @description Number of events in BANTER model by species.
+#' @description Return the number of events in a BANTER model by species.
 #' 
 #' @param x a \code{\link{banter_model}} object.
 #' 

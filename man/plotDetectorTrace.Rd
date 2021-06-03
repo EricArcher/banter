@@ -9,11 +9,12 @@ plotDetectorTrace(x, detector = NULL)
 \arguments{
 \item{x}{a \code{\link{banter_model}} object.}
 
-\item{detector}{names of models to plot. If set to \code{NULL}, traces for all
-models will be shown.}
+\item{detector}{names of models to plot. If set to \code{NULL}, traces for 
+all models will be shown.}
 }
 \description{
-Plot traces of OOB error rates for detector Random Forest models
+Plot traces of OOB error rates for detector Random Forest 
+  models.
 }
 \examples{
 data(train.data)

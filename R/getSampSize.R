@@ -3,7 +3,7 @@
 #' 
 #' @param x a \code{\link{banter_model}} object.
 #' @param model name of model to extract. Default is \code{"event"} 
-#'   to summarize the event-level model. Can also be name of a detector.
+#'   to return values for the event-level model. Can also be name of a detector.
 #' 
 #' @return a vector of sample sizes.
 #' 

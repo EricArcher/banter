@@ -10,7 +10,7 @@ getSampSize(x, model = "event")
 \item{x}{a \code{\link{banter_model}} object.}
 
 \item{model}{name of model to extract. Default is \code{"event"} 
-to summarize the event-level model. Can also be name of a detector.}
+to return values for the event-level model. Can also be name of a detector.}
 }
 \value{
 a vector of sample sizes.
