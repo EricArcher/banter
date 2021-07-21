@@ -162,14 +162,13 @@ removeBanterDetector <- function(x, name) {
       .rfFuncDetector(params) 
     } else { # Parallel random forest
       # Create multicore rf function
-      .clRF <- function(i, params) .rfFuncDetector(params)
       params$ntree <- ceiling(ntree / num.cores)
       parallel::clusterEvalQ(cl, require(randomForest))
       parallel::clusterExport(cl, "params", environment())
-      do.call(
-        randomForest::combine,
-        parallel::parLapplyLB(cl, 1:num.cores, .clRF, params = params)
+      rf.list <- parallel::parLapplyLB(
+        cl, 1:num.cores, function(i, p) .rfFuncDetector(p), p = params
       )
+      do.call(randomForest::combine, rf.list)
     }
   }, finally = if(!is.null(cl)) parallel::stopCluster(cl) else NULL)
   
