@@ -107,7 +107,9 @@ predict.banter_model <- function(object, new.data, ...) {
     event.cols, 
     grep(detector.regex, event.cols, value = TRUE)
   )
-  cols.missing <- setdiff(other.cols, colnames(new.data$events))
+  new.cols <- colnames(new.data$events)
+  cols.missing <- setdiff(other.cols, new.cols)
+  if(!"event.id" %in% new.cols) cols.missing <- c("event.id", cols.missing)
   if(length(cols.missing) > 0) {
     stop(
       "The following columns are missing from the event data: ",
