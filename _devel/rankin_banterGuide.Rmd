@@ -251,28 +251,24 @@ plotConfMat(bant.rf, title="Confusion Matrix HeatMap")
 ```
 
 **Plot Random Forest Trace**  
-The `plotRFtrace()` function allows us to plot the Error Trace directly.
+The `plotTrace()` function allows us to plot the Error Trace directly.
 ```{r, include=TRUE}
 # Plot trace of OOB error rate by number of trees
-plotRFtrace(bant.rf)
+plotTrace(bant.rf)
 ```
 
-**Plot In-Bag Distributions, Importance Null Distributions, and Histogram of OOB Samples**
-The In-Bag samples are the events used in the model. The InBag distribution plot provides a visual for the percent of trees where the sample was in-bag. The OOB plot provides a visual for the number of times a sample was out of bag. A high OOB and a low InBag suggest highly random sampling. 
+**Plot In-Bag Distributions**
+The InBag samples are the events used in the model. The InBag distribution plot provides a visual for the percent of trees where the sample was in-bag. The OOB plot provides a visual for the number of times a sample was out of bag. A high OOB and a low InBag suggest highly random sampling. 
 ```{r, include=TRUE}
 # Plot inbag distribution
 plotInbag(bant.rf)
-# Plot histogram of times samples were OOB
-plotOOBtimes(bant.rf)
 ```
 
-**Percent Correct and Expected Error Rate**
+**Percent Correct**
 A measure of how well a classifier works is to compare the percent correct score for a given threshold (specified percent of trees in the forest voting for that species) with the error rate you would expect based on random assignment and class sizes. 
 ```{r, include=TRUE}
 # Percent Correct for a series of thresholds
 pctCorrect(bant.rf, pct = c(seq(0.2, 0.6, 0.2), 0.95))
-# Expected Error Rate
-exptdErrRate(bant.rf)
 ```
 
 **Model Percent Correct** 
@@ -294,7 +290,7 @@ plotPredictedProbs(bant.rf, bins = 30, plot = TRUE)
 The proximity plot provides a view of the distribution of events within the tree space. It shows the relative distance of events based on their average distance in nodes in the trees across the forest. For each event in the plot, the color of the central dot represents the true species identity, and the color of the circle represents the _BANTER_ classification. Ideally, these would form rather distinct clusters, one for each species. The wider the spread of the events in this feature space, the more variation found in these predictors. Some species differentiation may be predicted by other predictors and may not be clear based on this pair of dimensions (those may be differentiated with different predictors). 
 ```{r, include=TRUE}
 # Proximity Plot
-proximityPlot(bant.rf)
+plotProximity(bant.rf)
 ```
 
 **Plot Votes**
@@ -308,7 +304,7 @@ plotVotes(bant.rf)
 The importance heat map provides a visual assessment of the important predictors for the overall model. The _BANTER_ event model relies on the mean assignment probability for each of the detectors in our detector model, as well as any event level measures. For example, in this heat map, the first variable is  'dw.D.delphis', which is the mean probability that a detection was assigned to the species 'D.delphis' in the whistle detector. This requires extra steps to dig down to the specific whistle measures that are the important predictor variables for the whistle detector. 
 ```{r, include=TRUE}
 # Importance Heat Map
-impHeatmap (bant.rf)
+plotImportance(bant.rf, plot.type = "heatmap")
 ```
 
 
@@ -324,8 +320,8 @@ You can also save a separate data.frame for your training data that includes the
 casePredict <- casePredictions(bant.rf)
 
 misclass <- casePredict %>% 
-  filter(is.correct== FALSE) %>%
-  select(case.id)
+  filter(!is.correct) %>%
+  select(id)
 ```
 
 We can then look closer at these events to learn more about them.
@@ -344,7 +340,7 @@ bant.4imp
 The predictors that showed the greatest importance came from the whistle (dw) detector and the burst pulse (bp) detectors. We can plot the distribution of the predictor variables on these classes (in this case, a violin plot for each of these four most important variables). 
 
 ```{r}
-plotImpVarDist(bant.rf, bantData.df, "species", max.vars = 4)
+plotImpPreds(bant.rf, bantData.df, "species", max.vars = 4)
 ```
 
 
