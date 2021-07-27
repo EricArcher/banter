@@ -66,13 +66,54 @@ predict.banter_model <- function(object, new.data, ...) {
   if(!all(c("events", "detectors") %in% names(new.data))) {
     stop(
       "'new.data' must have elements named 'events' and 'detectors'",
-      .call = FALSE
+      call. = FALSE
     )
   }
   
   # Check that at least one detector is present in 'new.data'
-  if(!any(names(new.data$detectors) %in% names(object@detectors))) {
-    stop("Can't predict with 'new.data' because no detectors from model are present.", .call = FALSE)
+  detectors.found <- intersect(names(object@detectors), names(new.data$detectors))
+  if(length(detectors.found) == 0) {
+    stop(
+      "Can't predict with 'new.data' because no detectors from model are present.", 
+      call. = FALSE
+    )
+  }
+  
+  # Check that all detectors that are present have the required fields
+  for(x in detectors.found) {
+    new.cols <- colnames(new.data$detectors[[x]])
+    mdl.cols <- names(getBanterModel(object, x)$forest$xlevels)
+    cols.missing <- setdiff(mdl.cols, new.cols)
+    if(!"event.id" %in% new.cols) cols.missing <- c("event.id", cols.missing)
+    if(length(cols.missing) > 0) {
+      stop(
+        "The '", x, "' detector is missing the following columns: ",
+        paste(cols.missing, collapse = ", "),
+        call. = FALSE
+      )
+    }
+  }
+  
+  # Check that event data has all necessary columns
+  #    detector columns in event model
+  detector.regex <- paste0(
+    paste0("^", detectors.found, ".", collapse = "|"),
+    paste0(".", detectors.found, "$", collapse = "|"),
+    sep = "|"
+  )
+  #    non-detector columns in event model
+  event.cols <- names(getBanterModel(object)$forest$xlevels)
+  other.cols <- setdiff(
+    event.cols, 
+    grep(detector.regex, event.cols, value = TRUE)
+  )
+  cols.missing <- setdiff(other.cols, colnames(new.data$events))
+  if(length(cols.missing) > 0) {
+    stop(
+      "The following columns are missing from the event data: ",
+      paste(cols.missing, collapse = ", "),
+      call. = FALSE
+    )
   }
   
   unique.events <- unique(new.data$events$event.id)
