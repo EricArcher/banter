@@ -91,7 +91,7 @@
 #' @keywords internal
 #' 
 .meanVotes <- function(x) {
-  sapply(names(x), function(d) {
+  df <- sapply(names(x), function(d) {
     x[[d]] %>% 
       tidyr::pivot_longer(
         -.data$event.id,
@@ -103,6 +103,7 @@
       dplyr::summarize(prob.mean = mean(.data$prob), .groups = "drop") 
   }, simplify = FALSE) %>% 
     dplyr::bind_rows() %>% 
-    tidyr::pivot_wider(names_from = "species", values_from = "prob.mean") %>% 
-    replace(is.na(.), 0) 
+    tidyr::pivot_wider(names_from = "species", values_from = "prob.mean") 
+  
+  replace(df, is.na(df), 0)
 }

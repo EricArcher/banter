@@ -38,7 +38,7 @@
 numCalls <- function(x, by = c("species", "event")) {
   if(is.null(x@detectors)) stop("no detectors loaded in model.")
   by <- switch(match.arg(by), species = "species", event = "event.id")
-  lapply(names(x@detectors), function(d) {
+  df <- lapply(names(x@detectors), function(d) {
     x@data %>% 
       dplyr::left_join(x@detectors[[d]]@ids, by = "event.id") %>% 
       dplyr::group_by(dplyr::across(by)) %>% 
@@ -46,8 +46,9 @@ numCalls <- function(x, by = c("species", "event")) {
       dplyr::mutate(detector = paste0("num.", d))
   }) %>%
     dplyr::bind_rows() %>% 
-    tidyr::pivot_wider(names_from = "detector", values_from = "n") %>% 
-    replace(is.na(.), 0) %>% 
+    tidyr::pivot_wider(names_from = "detector", values_from = "n")
+  
+  replace(df, is.na(df), 0) %>% 
     as.data.frame()
 }
 

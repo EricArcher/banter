@@ -17,7 +17,6 @@ Imports:
   gridExtra (>= 2.3),
   methods,
   parallel,
-  plyr,
   randomForest (>= 4.6),
   rfPermute (>= 2.5),
   rlang,
@@ -29,5 +28,5 @@ Remotes:
   ericarcher/rfPermute
 Suggests: testthat
 License: GNU General Public License
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Encoding: UTF-8

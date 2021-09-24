@@ -143,8 +143,8 @@ predict.banter_model <- function(object, new.data, ...) {
     dplyr::group_by(.data$event.id) %>% 
     dplyr::mutate(n = .data$n / sum(.data$n, na.rm = TRUE)) %>% 
     dplyr::ungroup() %>% 
-    tidyr::pivot_wider(names_from = "detector", values_from = "n") %>% 
-    replace(is.na(.), 0) %>% 
+    tidyr::pivot_wider(names_from = "detector", values_from = "n")
+  detector.prop <- replace(detector.prop, is.na(detector.prop), 0) %>% 
     as.data.frame()
   
   # Calculate mean votes for each event
@@ -192,8 +192,7 @@ predict.banter_model <- function(object, new.data, ...) {
       }
     }
   
-  df <- df %>% 
-    dplyr::filter(stats::complete.cases(.))
+  df <- stats::na.omit(df)
 
   result <- list(
     events = df,

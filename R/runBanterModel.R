@@ -88,7 +88,7 @@ runBanterModel <- function(x, ntree, sampsize = 1) {
   }
       
   df <- df %>% 
-    dplyr::filter(stats::complete.cases(.)) %>% 
+    stats::na.omit() %>% 
     dplyr::mutate(species = as.character(.data$species)) 
   
   # Get and check requested sample size

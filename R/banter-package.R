@@ -11,7 +11,6 @@
 #' @importFrom rlang .data
 #' @importFrom magrittr %>%
 #' @importFrom methods new
-#' @importFrom plyr .
 #' @keywords package
 NULL
 
