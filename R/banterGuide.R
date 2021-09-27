@@ -12,5 +12,6 @@
 #' @export
 #' 
 banterGuide <- function() {
-  utils::browseURL(system.file("banterGuide.html", package = "banter"))
+  utils::browseURL("https://taikisan21.github.io/PAMpal/banterGuide.html")
+  #utils::browseURL(system.file("banterGuide.html", package = "banter"))
 }
