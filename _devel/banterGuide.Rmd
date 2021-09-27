@@ -1,17 +1,17 @@
 ---
-title: "_BANTER_: A User's Guide to Acoustic Classification"
+title: '_BANTER_: A User''s Guide to Acoustic Classification'
 author:
-  - Shannon Rankin and Frederick Archer
-  - Marine Mammal and Turtle Division, SWFSC, NOAA Fisheries
-  - 8901 La Jolla, Shores Dr., La Jolla, CA 92037
+- Shannon Rankin and Frederick Archer
+- Marine Mammal and Turtle Division, SWFSC, NOAA Fisheries
+- 8901 La Jolla, Shores Dr., La Jolla, CA 92037
 date: "`r format(Sys.time(), '%d %B %Y')`"
-output: 
+output:
   html_document:
-    toc: true
+    toc: yes
     toc_depth: 4
-    toc_float: 
-      collapsed: true
-      smooth_scroll: true
+    toc_float:
+      collapsed: yes
+      smooth_scroll: yes
 ---
 
 ```{r setup, include=FALSE}

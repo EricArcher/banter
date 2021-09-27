@@ -7,7 +7,6 @@
 ^NEWS\.md$
 tar.gz$
 .gitignore
-^.*\.Rproj$
-^\.Rproj\.user$
 .DS_Store
 ^\.github$
+^\.DS_Store$
