@@ -98,7 +98,9 @@ predict(bant.mdl, test.data)
 ### Reference
 Rankin, S., Archer, F., Keating, J. L., Oswald, J. N., Oswald, M., Curtis, A. and Barlow, J. (2017) Acoustic classification of dolphins in the California Current using whistles, echolocation clicks, and burst pulses. Mar Mam Sci, 33: 520-540. [doi:10.1111/mms.12381](https://onlinelibrary.wiley.com/doi/abs/10.1111/mms.12381)
 
-### version 0.9.4 (devel)
+### version 0.9.5 (devel)
+
+### version 0.9.4 (on CRAN)
 
 * Detector names and detector predictor column names submitted to `addBanterDetector()` are now first checked to make sure they are syntactically valid and unique by comparing them with the results from `make.names()`.
 * Detector names and detector predictor column names in `new.data` submitted to `predict()` are first checked to make sure at least one detector from model is present.
@@ -107,6 +109,6 @@ Rankin, S., Archer, F., Keating, J. L., Oswald, J. N., Oswald, M., Curtis, A. an
 * Default value for num.cores has been set to 1.
 * Added `banterGuide()`
 
-### version 0.9.3 (on CRAN)
+### version 0.9.3
 
 * Initial CRAN release
