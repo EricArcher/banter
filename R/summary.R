@@ -63,6 +63,7 @@ summary.banter_model <- function(object, model = "event", n = 0.1, bins = 20, ..
     ))
     cat("\nConfusion matrix:\n")
     print(rfPermute::confusionMatrix(rf))
+    cat("\n")
     
     gridExtra::grid.arrange(
       rfPermute::plotTrace(rf, plot = FALSE) + 
