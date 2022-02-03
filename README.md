@@ -102,6 +102,7 @@ Rankin, S., Archer, F., Keating, J. L., Oswald, J. N., Oswald, M., Curtis, A. an
 
 * add `subsampleDetections()` to draw a random number of detections per event
 * fixed `predict()` so that species names in `new.data` are modified using `make.names()` like they are in constructing the initial banter model.
+* added run timestamps to all models and changed `summary()` to display a matrix of all.
 
 
 ### version 0.9.4 (on CRAN)
