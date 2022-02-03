@@ -72,7 +72,7 @@ _BANTER_ is a *supervised* machine learning classification model, and the streng
 
 First, install the following R packages
 ```{r echo=TRUE, eval=FALSE}
-install.packages(c("banter","rfPermute", "tidyverse"))
+install.packages(c("banter", "rfPermute", "tidyverse"))
 ```
 Then load the R packages 
 ```{r, eval=T, message=FALSE}

@@ -44,18 +44,29 @@ methods::setGeneric("summary")
 #' @method summary banter_model
 #' @export 
 #' 
-summary.banter_model <- function(object, model = "event", n = 0.1, bins = 20, ...) {  
+summary.banter_model <- function(object, model = "event", n = 0.50, bins = 20, ...) {  
   print(object)
+  
   rf <- getBanterModel(object, model)
   if(!is.null(rf)) {  
+    cat("\n<< Summary for \"", model, "\" model >>\n", sep = "")
     sampsize <- if(model == "event") {
       object@sampsize
     } else {
       object@detectors[[model]]@sampsize
     } 
     
-    cat("\nDistribution of percent correctly classified overall in last 'n' trees:\n")
-    print(round(.rfPctCorrectSmry(rf, n) * 100, 2))
+    x <- rf$err.rate
+    ntree <- nrow(x)
+    if(dplyr::between(n, 0, 1)) n <- ceiling(n * ntree)
+    if(n > ntree) n <- ntree
+    cat(
+      "\nDistribution of percent correctly classified overall in last ", 
+      n, " (", round(n / ntree, 2) * 100, "%) trees:\n",
+      sep = ""
+    )
+    correct <- 1 - x[(ntree - n + 1):ntree, "OOB"]
+    print(round(summary(correct), 2))
     cat("\nSample inbag rate distribution:\n") 
     print(rbind(
       expected = round(summary(as.vector(sampsize / table(rf$y))), 3),
@@ -79,12 +90,12 @@ summary.banter_model <- function(object, model = "event", n = 0.1, bins = 20, ..
 #' @aliases summary,banter_model-method
 methods::setMethod("summary", "banter_model", summary.banter_model) 
 
-#' @rdname internals
-#' @keywords internal
-#' 
-.rfPctCorrectSmry <- function(rf, n = 0.1) {
-  x <- rf$err.rate
-  if(dplyr::between(n, 0, 1)) n <- ceiling(n * nrow(x))
-  correct <- 1 - x[(nrow(x) - n + 1):nrow(x), "OOB"]
-  c(n = length(correct), round(summary(correct), 3))
-}
+#' #' @rdname internals
+#' #' @keywords internal
+#' #' 
+#' .rfPctCorrectSmry <- function(rf, n = 0.1) {
+#'   x <- rf$err.rate
+#'   if(dplyr::between(n, 0, 1)) n <- ceiling(n * nrow(x))
+#'   correct <- 1 - x[(nrow(x) - n + 1):nrow(x), "OOB"]
+#'   c(n = length(correct), round(summary(correct), 3))
+#' }
