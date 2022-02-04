@@ -45,8 +45,9 @@ subsampleDetections <- function(data, n) {
       stop("data.frame must have 'event.id' column.")
     }
     rows <- tapply(1:nrow(x), x$event.id, function(i, n) {
+      if(length(i) == 1) return(i) # because sample() with a scalar samples 1:i
       n.i <- if(n < 1) ceiling(length(i) * n) else min(length(i), n)
-      sample(i, n.i)
+      sample(i, n.i, replace = FALSE)
     }, n = n, simplify = FALSE)
     x[sort(unlist(rows)), ]
   }
