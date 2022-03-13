@@ -1,6 +1,6 @@
 Package: banter
 Type: Package
-Title: BioAcoustic EveNT ClassifiER
+Title: BioAcoustic eveNT classifiER
 Description: Create a hierarchical acoustic event species classifier out of  
   multiple call type detectors as described in 
   Rankin et al (2017) <doi:10.1111/mms.12381>.
@@ -24,7 +24,6 @@ Imports:
   swfscMisc (>= 1.5),
   tibble (>= 3.1.2),
   tidyr (>= 1.1.1)
-Remotes: ericarcher/rfPermute
 Suggests: testthat
 License: GNU General Public License
 RoxygenNote: 7.1.2
