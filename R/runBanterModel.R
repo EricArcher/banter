@@ -95,6 +95,7 @@ runBanterModel <- function(x, ntree, sampsize = 1) {
   
   # Get and check requested sample size
   sampsize <- .getSampsize(df$species, sampsize, "Event model")
+  if(is.null(sampsize)) return(x)
   
   # Remove species with insufficient sample sizes and finish data format
   x@model.data <- df %>% 

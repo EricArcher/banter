@@ -134,6 +134,7 @@ removeBanterDetector <- function(x, name) {
     sampsize,
     paste0("Detector model (", name, ")")
   )
+  if(is.null(sampsize)) return(NULL)
 
   # Remove missing species and format columns
   df <- df %>%
