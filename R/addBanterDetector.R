@@ -65,7 +65,7 @@ addBanterDetector <- function(x, data, name, ntree, sampsize = 1,
         num.cores = num.cores
       )
     }, simplify = FALSE)
-    new.detectors <- new.detectors[!is.null(new.detectors)]
+    new.detectors <- new.detectors[!sapply(new.detectors, is.null)]
     if(length(new.detectors) > 1) {
       x@detectors[names(new.detectors)] <- new.detectors
     }
@@ -136,7 +136,7 @@ removeBanterDetector <- function(x, name) {
   sampsize <- .getSampsize(
     df$species,
     sampsize,
-    paste0("Detector model (", name, ")")
+    paste0("Detector model '", name, "'")
   )
   if(is.null(sampsize)) return(NULL)
 
