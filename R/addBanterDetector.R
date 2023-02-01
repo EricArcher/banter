@@ -66,7 +66,7 @@ addBanterDetector <- function(x, data, name, ntree, sampsize = 1,
       )
     }, simplify = FALSE)
     new.detectors <- new.detectors[!sapply(new.detectors, is.null)]
-    if(length(new.detectors) > 1) {
+    if(length(new.detectors) > 0) {
       x@detectors[names(new.detectors)] <- new.detectors
     }
   # If data is a data.frame
@@ -85,7 +85,9 @@ addBanterDetector <- function(x, data, name, ntree, sampsize = 1,
   } else stop("'data' must be a list or data.frame.")
   
   # Sort detectors and empty event model info
-  x@detectors <- x@detectors[order(names(x@detectors))]
+  if(length(x@detectors) > 1) {
+    x@detectors <- x@detectors[order(names(x@detectors))]
+  }
   x@model.data <- x@model <- x@sampsize <- x@timestamp <- NULL
   x
 }
