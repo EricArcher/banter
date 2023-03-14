@@ -192,7 +192,11 @@ predict.banter_model <- function(object, new.data, ...) {
       }
     }
   
-  df <- stats::na.omit(df)
+  is.missing <- sapply(
+    setdiff(colnames(df), "species"), 
+    function(col) is.na(df[, col])
+  )
+  df <- df[!apply(is.missing, 1, any), ]
 
   result <- list(
     events = df,
@@ -213,8 +217,8 @@ predict.banter_model <- function(object, new.data, ...) {
   if("species" %in% colnames(df)) {
     result$predict.df <- dplyr::mutate(
       result$predict.df,
-      original = make.names(df$species, allow_ = FALSE),
-      correct = .data$original == .data$predicted
+      original = ifelse(is.na(df$species), NA, make.names(df$species, allow_ = FALSE)),
+      correct = ifelse(is.na(df$species), NA, .data$original == .data$predicted)
     )
     conf.df <- result$predict.df
     conf.df$predicted <- factor(
