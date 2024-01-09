@@ -27,4 +27,6 @@ Imports:
 Suggests: testthat
 License: GNU General Public License
 RoxygenNote: 7.2.3
+URL: https://github.com/ericarcher/banter
+BugReports: https://github.com/ericarcher/banter/issues
 Encoding: UTF-8
